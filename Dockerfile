@@ -14,7 +14,7 @@ RUN apt-get update --allow-releaseinfo-change && apt-get install git -y \
     && apt-get install -y build-essential zlib1g-dev libbz2-dev  libncurses5 liblzma-dev make gcc g++  libopenblas-dev gnuplot
 
 RUN conda config --add channels biobuilds; conda config --add channels bioconda
-RUN conda create --name consensus && conda activate consensus && conda install --yes -c bioconda medaka
+RUN conda create --name consensus && conda activate consensus && conda install --yes -c bioconda artic
 
 COPY environment.yml /opt/environment.yml
 RUN conda env create  -f /opt/environment.yml

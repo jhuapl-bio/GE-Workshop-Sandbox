@@ -45,7 +45,7 @@ A list of installed binaries for bioinformatics teaching is as follows:
 ## 3a. Running an interactive container 
 
 ```
-docker container run --rm -it jhuaplbio/sandbox bash -c "conda activate sandbox"
+docker container run --rm -it jhuaplbio/sandbox -v $pwd/test-data:/data bash -c "conda activate sandbox"
 ```
 
 
@@ -57,7 +57,7 @@ You can of course run all things without being in the interactive shell, which s
 ### Windows Powershell
 
 ```
-docker container run -w /data -v $pwd/test-data:/data --rm -it jhuaplbio/sandbox <command>
+docker container run -w /data -v $pwd/test-data:/data --rm -it jhuaplbio/sandbox 
 ```
 
 ### Unix Terminal
@@ -66,7 +66,24 @@ docker container run -w /data -v $pwd/test-data:/data --rm -it jhuaplbio/sandbox
 docker container run -w /data -v $PWD/test-data:/data --rm -it jhuaplbio/sandbox <command>
 ```
 
-All commands going forward will be assuming that we're working in the interactive environment. Your terminal once in should look something like: 
+If we wanted to start up an interactive shell, we would simply override the entry command (the command run at start) with `bash` like so:
+
+### Windows Powershell
+
+```
+docker container run -w /data -v $pwd/test-data:/data --rm -it jhuaplbio/sandbox bash
+```
+
+### Unix Terminal
+
+```
+docker container run -w /data -v $PWD/test-data:/data --rm -it jhuaplbio/sandbox bash
+
+```
+
+:info:
+
+**All commands going forward will be assuming that we're working in the interactive environment that was just mentioned so make sure to run that before continuing. Your terminal once in should look something like:**
 
 ```
 (base) root@addcf87af2d3:/# 
@@ -239,11 +256,56 @@ tar -xvzf --directory /data/databases/minikraken2
 #### i2. Running Kraken2 using the minikraken2 database (Illumina paired end)
 
 ```
-kraken2 --db /data/databases/minikraken2 --gzip-compressed --paired classified-out ERR6913101#.fq viruses_trimmed/ERR6913101_1.trim.fastq.gz viruses_trimmed/ERR6913101_2.trim.fastq.gz --report classifications/ERR6913101.kraken.report
+mkdir /data/classifications;
+
+kraken2 --db /data/databases/minikraken2 --gzip-compressed --paired --classified-out ERR6913101#.fq viruses_trimmed/ERR6913101_1.trim.fastq.gz viruses_trimmed/ERR6913101_2.trim.fastq.gz --report classifications/ERR6913101.kraken.report
 ```
 
 #### i2. Running Kraken2 using the minikraken2 database (Nanopore)
 
 ```
-kraken2 --db /data/databases/minikraken2 classified-out sample_metagenome#.fq metagenome/sample_metagenome.fastq --report classifications/sample_metagenome.kraken.report
+mkdir /data/classifications;
+
+kraken2 --db /data/databases/minikraken2 --classified-out sample_metagenome#.fq metagenome/sample_metagenome.fastq --report classifications/sample_metagenome.kraken.report
+```
+
+#### i4. Prepping the database for Krona Plots
+
+:warning:Requires internet connectivity
+
+```
+ktUpdateTaxonomy.sh /data/databases/minikraken2
+```
+
+#### i3. Creating a Krona Plot of your Tax calls
+
+```
+ktImportTaxonomy -i classifications/ERR6913101.kraken.report -o classifications/ERR6913101.kraken.html -tax /data/databases/minikraken2/
+
+ktImportTaxonomy -i classifications/sample_metagenome.kraken.report -o classifications/sample_metagenome.kraken.html -tax /data/databases/minikraken2/
+
+```
+
+#### i4. Creating a consensu genome from Nanopore Reads using Medaka
+
+```
+
+wget --no-check-certificate https://github.com/artic-network/primer-schemes/archive/refs/heads/master.zip && unzip master.zip && mv primer-schemes-master /data/primer_schemes
+
+
+conda activate consensus && \
+    mkdir -p /data/consensus/medaka && \
+    cd /data/consensus/medaka
+
+    
+artic minion --medaka \
+    --medaka-model r941_min_high_g360 \
+    --normalise 1000000 \
+    --read-file /data/demux-fastq_pass/NB11.fastq \
+    --scheme-directory /data/primer_schemes \
+    --scheme-version V3 \
+    nCoV-2019/3 NB11;
+
+cd /data 
+
 ```
