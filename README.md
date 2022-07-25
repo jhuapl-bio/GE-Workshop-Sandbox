@@ -81,7 +81,7 @@ docker container run -w /data -v $PWD/test-data:/data --rm -it jhuaplbio/sandbox
 
 ```
 
-:info:
+:warning:
 
 **All commands going forward will be assuming that we're working in the interactive environment that was just mentioned so make sure to run that before continuing. Your terminal once in should look something like:**
 
