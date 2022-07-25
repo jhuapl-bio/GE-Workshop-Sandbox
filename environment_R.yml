@@ -1,0 +1,7 @@
+name: test
+channels:
+  - bioconda
+  - defaults
+  - r
+dependencies:
+  - r
