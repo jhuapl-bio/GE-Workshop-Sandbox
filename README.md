@@ -168,12 +168,38 @@ bowtie2 -x /data/reference/nCoV-2019 \
     -S alignments/ERR6913101_alignments.sam
 ```
 
+Let's now try minimap2, which is recommended for long reads (Oxford Nanopore runs)
+
+```
+
+mkdir -p /data/alignments/minimap2 && \
+minimap2 \
+    -x map-ont \
+    -a /data/reference/nCoV-2019.reference.fasta \
+    -o /data/alignments/minimap2/alignment.sam demux-fastq_pass/NB03.fastq
+
+```
+
+
+
 ### c. Converting SAM to BAM to reduce filesize
+
+For our short read alignments, let's work on that first...
 
 ```
 samtools view \
     -S -b alignments/ERR6913101_alignments.sam > alignments/ERR6913101_alignments.bam && \
     rm alignments/ERR6913101_alignments.sam
+
+```
+
+Next, let's take a look at the equivalent with minimap2 for the long reads
+
+
+```
+samtools view \
+    -S \
+    -b /data/alignments/minimap2/alignment.sam > /data/alignments/minimap2/alignment.bam
 
 ```
 
@@ -201,7 +227,10 @@ bcftools mpileup \
             -o alignments/ERR6913101_alignment.vcf
 ```
 
-### f. Plotting with Bamstats
+
+### f.2 Plotting with Bamstats
+
+First, like always, let's focus on the short reads
 
 ```
 samtools stats alignments/ERR6913101_alignments_sorted.bam > alignments/ERR6913101_alignments_sorted.stats
@@ -210,6 +239,17 @@ plot-bamstats \
     -p alignments/plots_bamstats alignments/ERR6913101_alignments_sorted.stats 
 
 ```
+
+Next, the long reads doing the same process except on the minimap2 alignment output file (.bam)
+
+```
+samtools stats /data/alignments/minimap2/alignment.bam > /data/alignments/minimap2/alignment.stats
+
+plot-bamstats \
+    -p alignments/minimap2/plots_bamstats alignments/minimap2/alignment.stats
+
+```
+
 
 ### g. Plotting a sample Oxford Nanopore run with NanoPlot
 
@@ -220,7 +260,6 @@ NanoPlot \
 ```
 
 ### h. Plotting a sample Illumina Paired end read set with FastQC
-
 
 ```
 mkdir /data/fastqc_plots_fastq;
@@ -238,11 +277,12 @@ fastqc \
 
 ```
 
-### i. Running Classification with Kraken2
+
+### j. Running Classification with Kraken2
 
 :warning:Requires internet to download the minikraken database. You can also get it from [here](https://ccb.jhu.edu/software/kraken2/index.shtml?t=downloads)
 
-#### i1. Getting the minikraken database for Kraken2
+#### j1. Getting the minikraken database for Kraken2
 
 ```
 mkdir -p /data/databases
@@ -253,7 +293,7 @@ tar -xvzf --directory /data/databases/minikraken2
 
 ```
 
-#### i2. Running Kraken2 using the minikraken2 database (Illumina paired end)
+#### j2. Running Kraken2 using the minikraken2 database (Illumina paired end)
 
 ```
 mkdir /data/classifications;
@@ -261,7 +301,7 @@ mkdir /data/classifications;
 kraken2 --db /data/databases/minikraken2 --gzip-compressed --paired --classified-out ERR6913101#.fq viruses_trimmed/ERR6913101_1.trim.fastq.gz viruses_trimmed/ERR6913101_2.trim.fastq.gz --report classifications/ERR6913101.kraken.report
 ```
 
-#### i2. Running Kraken2 using the minikraken2 database (Nanopore)
+#### j3. Running Kraken2 using the minikraken2 database (Nanopore)
 
 ```
 mkdir /data/classifications;
@@ -269,7 +309,7 @@ mkdir /data/classifications;
 kraken2 --db /data/databases/minikraken2 --classified-out sample_metagenome#.fq metagenome/sample_metagenome.fastq --report classifications/sample_metagenome.kraken.report
 ```
 
-#### i4. Prepping the database for Krona Plots
+#### j4. Prepping the database for Krona Plots
 
 :warning:Requires internet connectivity
 
@@ -277,7 +317,7 @@ kraken2 --db /data/databases/minikraken2 --classified-out sample_metagenome#.fq 
 ktUpdateTaxonomy.sh /data/databases/minikraken2
 ```
 
-#### i3. Creating a Krona Plot of your Tax calls
+#### j5. Creating a Krona Plot of your Tax calls
 
 ```
 ktImportTaxonomy -i classifications/ERR6913101.kraken.report -o classifications/ERR6913101.kraken.html -tax /data/databases/minikraken2/
@@ -286,22 +326,50 @@ ktImportTaxonomy -i classifications/sample_metagenome.kraken.report -o classific
 
 ```
 
-#### i4. Creating a consensu genome from Nanopore Reads using Medaka
+#### k. Creating a consensus genome from Nanopore Reads using Medaka
+
+
+You may have already noticed that we have a demultiplexed set of files in the `/data/demux-fastq_pass` folder. However, this is not likely to happen when you have a traditional run from MinKNOW. Usually it will spit out a set of fastq files rather than just one single one per sample. To gather them all up, we can run one of the subcommands called `artic gather`. This will push all fastq files into a single one like what we see in `/data/demux-fastq_pass`
+
+```
+artic gather --directory /data/20200514_2000_X3_FAN44250_e97e74b4/fastq_pass
 
 ```
 
-wget --no-check-certificate https://github.com/artic-network/primer-schemes/archive/refs/heads/master.zip && unzip master.zip && mv primer-schemes-master /data/primer_schemes
+[Medaka](https://github.com/nanoporetech/medaka) is a good tool for generating consensues and variant calling for most organisms. 
 
+```
 
-conda activate consensus && \
+conda activate medaka && \
     mkdir -p /data/consensus/medaka && \
     cd /data/consensus/medaka
 
-    
+medaka_consensus \
+    -i /data/demux-fastq_pass/NB11.fastq \
+    -d /data/reference/nCoV-2019.reference.fasta \
+    -o /data/consensus/medaka \
+    -m r941_min_high_g360
+
+```
+
+However, if we're working with a select few organisms utilizing a primer scheme, we should opt for the artic bioinformatics pipeline. This pipeline can use both nanopolish and medaka as it's primary variant and consensus calling set of scripts. In addition, it will perform the necessary trimming/pre-processing for you on your demultiplexed fastq files. It also comes with several subcommands that can help prep your data, like concatenated all of your fastq files into a single one to prepare for consensus building, no matter the purpose. 
+
+First, we need to get the primer schemes for SARS-CoV-2 (our organism of interest for this example). These primers will be used for the artic minion process
+
+```
+
+wget --no-check-certificate https://github.com/artic-network/primer-schemes/archive/refs/heads/master.zip && unzip master.zip && mv primer-schemes-master /data/primer_schemes; rm master.zip
+
+```
+
+This is pulling in the set of primer schemes directly from the artic pipeline toolkit's set of primer schemes for EBOLA, SARS-CoV-2, and Nipah
+
+```
+
 artic minion --medaka \
     --medaka-model r941_min_high_g360 \
     --normalise 1000000 \
-    --read-file /data/demux-fastq_pass/NB11.fastq \
+    --read-file /data/20200514_2000_X3_FAN44250_e97e74b4/fastq_pass \
     --scheme-directory /data/primer_schemes \
     --scheme-version V3 \
     nCoV-2019/3 NB11;
