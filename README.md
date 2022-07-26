@@ -18,9 +18,9 @@ docker build . -t jhuaplbio/sandbox
 
 ## 2. Test Data Retrieval 
 
-If you have gdown on your system, download it here with: `gdown 1zrgwheJxhMTvd7zu0fuRhVYYM0aGY5XS -O ./test-data.zip` 
+<!-- If you have gdown on your system, download it here with: `gdown 1zrgwheJxhMTvd7zu0fuRhVYYM0aGY5XS -O ./test-data.zip` 
 
-else 
+else  -->
 
 Get the test data from [here](https://drive.google.com/file/d/1zrgwheJxhMTvd7zu0fuRhVYYM0aGY5XS/view?usp=sharing). Place it where you have this repository to make it easier to track. 
 
