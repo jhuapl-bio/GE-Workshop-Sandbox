@@ -41,6 +41,7 @@ A list of installed binaries for bioinformatics teaching is as follows:
 7. [samtools](http://www.htslib.org/)  - Parsing and Variant Calling
 8. [bedtools](https://bedtools.readthedocs.io/en/latest/)  - Parsing
 9. [medaka](https://github.com/nanoporetech/medaka) - Consensus
+10. [artic](https://github.com/nanoporetech/medaka) - Consensus
 
 ## 3a. Running an interactive container 
 
@@ -284,34 +285,70 @@ fastqc \
 
 :warning:Requires internet to download the minikraken database. You can also get it from [here](https://ccb.jhu.edu/software/kraken2/index.shtml?t=downloads)
 
-#### j1. Getting the minikraken database for Kraken2
+#### j1. Getting the flukraken database for Kraken2
+
+```
+mkdir -p /data/databases
+
+wget https://media.githubusercontent.com/media/jhuapl-bio/mytax/master/databases/flukraken2.tar.gz -O /data/databases/flukraken.tar.gz
+
+tar -xvzf /data/databases/flukraken2.tar.gz --directory /data/databases/
+
+
+```
+
+#### j2. Running Kraken2 using the flukraken2 database (Nanopore)
+
+```
+mkdir /data/classifications;
+
+kraken2 --db /data/databases/flukraken2 --classified-out flu_BC01#.fq metagenome/flu_ont/flu_BC01.fastq --report classifications/flu_BC01.kraken.report
+
+
+```
+
+#### j3. Prepping the database for Krona Plots
+
+:warning:Requires internet connectivity
+
+```
+ktUpdateTaxonomy.sh /data/databases/flukraken2
+```
+
+#### j4. Creating a Krona Plot of your Tax calls
+
+```
+ktImportTaxonomy -i classifications/flu_BC01.kraken.report -o classifications/flu_BC01.kraken.html -tax /data/databases/flukraken2
+
+```
+
+No open the `classifications/flu_BC01.kraken.html` to have a fun Krona plot to play with! Simply double-click it to open it automatically in your browser
+
+:warning: This next section is optional for the workshop. Feel free to try at home. It will require substantial filesize(s) to be downloaded so please be patient!
+
+#### j6. Getting the minikraken database for Kraken2
 
 ```
 mkdir -p /data/databases
 
 wget ftp://ftp.ccb.jhu.edu/pub/data/kraken2_dbs/old/minikraken2_v2_8GB_201904.tgz -O /data/databases/minikraken2.tar.gz; 
 
-tar -xvzf --directory /data/databases/minikraken2
+tar -xvzf --directory /data/databases/minikraken2 /data/databases/minikraken2.tar.gz
 
 ```
 
-#### j2. Running Kraken2 using the minikraken2 database (Illumina paired end)
 
-```
-mkdir /data/classifications;
-
-kraken2 --db /data/databases/minikraken2 --gzip-compressed --paired --classified-out ERR6913101#.fq viruses_trimmed/ERR6913101_1.trim.fastq.gz viruses_trimmed/ERR6913101_2.trim.fastq.gz --report classifications/ERR6913101.kraken.report
-```
-
-#### j3. Running Kraken2 using the minikraken2 database (Nanopore)
+#### j7. Running Kraken2 using the flukraken2 database (Nanopore)
 
 ```
 mkdir /data/classifications;
 
 kraken2 --db /data/databases/minikraken2 --classified-out sample_metagenome#.fq metagenome/sample_metagenome.fastq --report classifications/sample_metagenome.kraken.report
+
+
 ```
 
-#### j4. Prepping the database for Krona Plots
+#### j8. Prepping the database for Krona Plots
 
 :warning:Requires internet connectivity
 
@@ -319,7 +356,7 @@ kraken2 --db /data/databases/minikraken2 --classified-out sample_metagenome#.fq 
 ktUpdateTaxonomy.sh /data/databases/minikraken2
 ```
 
-#### j5. Creating a Krona Plot of your Tax calls
+#### j9. Creating a Krona Plot of your Tax calls
 
 ```
 ktImportTaxonomy -i classifications/ERR6913101.kraken.report -o classifications/ERR6913101.kraken.html -tax /data/databases/minikraken2/
@@ -328,10 +365,30 @@ ktImportTaxonomy -i classifications/sample_metagenome.kraken.report -o classific
 
 ```
 
+Now take a look at the resulting `classifications/sample_metagenome.kraken.html` file by double-clicking it to open in your browser automatically
+
 #### k. Creating a consensus genome from Nanopore Reads using Medaka
 
 
+:warning: You need to use a different Docker image than sandbox for this. If you're in a Docker container alredy you need to type: `exit`
+
 You may have already noticed that we have a demultiplexed set of files in the `/data/demux-fastq_pass` folder. However, this is not likely to happen when you have a traditional run from MinKNOW. Usually it will spit out a set of fastq files rather than just one single one per sample. To gather them all up, we can run one of the subcommands called `artic gather`. This will push all fastq files into a single one like what we see in `/data/demux-fastq_pass`
+
+Let's first enter our new image by running. Remember that the name for the current directory is `$PWD` for Unix (Mac or Linux) and `$pwd` for Windows Powershell
+
+
+### Windows Powershell
+
+```
+docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic jhuaplbio/basestack_consensus bash
+```
+
+### Unix
+
+```
+docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic jhuaplbio/basestack_consensus bash
+```
+
 
 ```
 artic gather --directory /data/20200514_2000_X3_FAN44250_e97e74b4/fastq_pass
@@ -356,25 +413,19 @@ medaka_consensus \
 
 However, if we're working with a select few organisms utilizing a primer scheme, we should opt for the artic bioinformatics pipeline. This pipeline can use both nanopolish and medaka as it's primary variant and consensus calling set of scripts. In addition, it will perform the necessary trimming/pre-processing for you on your demultiplexed fastq files. It also comes with several subcommands that can help prep your data, like concatenated all of your fastq files into a single one to prepare for consensus building, no matter the purpose. 
 
-First, we need to get the primer schemes for SARS-CoV-2 (our organism of interest for this example). These primers will be used for the artic minion process
+First, we need to get the primer schemes for SARS-CoV-2 (our organism of interest for this example). These primers will be used for the artic minion process. Luckily, we have this present in your test-data/primer-schemes
 
-```
-
-wget --no-check-certificate https://github.com/artic-network/primer-schemes/archive/refs/heads/master.zip && unzip master.zip && mv primer-schemes-master /data/primer_schemes; rm master.zip
-
-```
 
 This is pulling in the set of primer schemes directly from the artic pipeline toolkit's set of primer schemes for EBOLA, SARS-CoV-2, and Nipah
 
 ```
 
-artic minion --medaka \
+artic minion \
+    --medaka \
     --medaka-model r941_min_high_g360 \
     --normalise 1000000 \
-    --read-file /data/20200514_2000_X3_FAN44250_e97e74b4/fastq_pass \
-    --scheme-directory /data/primer_schemes \
-    --scheme-version V3 \
-    nCoV-2019/3 NB11;
+    --read-file /data/demux-fastq_pass/NB11.fastq \
+    ncov-2019/V3 NB11;
 
 cd /data 
 
