@@ -45,7 +45,7 @@ A list of installed binaries for bioinformatics teaching is as follows:
 ## 3a. Running an interactive container 
 
 ```
-docker container run --rm -it -v $pwd/test-data:/data jhuaplbio/sandbox  bash -c "conda activate sandbox"
+docker container run --rm -it -v $pwd/test-data:/data jhuaplbio/sandbox  bash 
 ```
 
 
