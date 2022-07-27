@@ -190,6 +190,7 @@ minimap2 \
 For our short read alignments, let's work on that first...
 
 ```
+
 samtools view \
     -S -b alignments/ERR6913101_alignments.sam > alignments/ERR6913101_alignments.bam && \
     rm alignments/ERR6913101_alignments.sam
@@ -200,6 +201,7 @@ Next, let's take a look at the equivalent with minimap2 for the long reads
 
 
 ```
+
 samtools view \
     -S \
     -b /data/alignments/minimap2/alignment.sam > /data/alignments/minimap2/alignment.bam
@@ -285,48 +287,29 @@ fastqc \
 
 :warning:Requires internet to download the minikraken database. You can also get it from [here](https://ccb.jhu.edu/software/kraken2/index.shtml?t=downloads)
 
-#### j1. Getting the flukraken database for Kraken2
 
-```
-mkdir -p /data/databases
-
-wget https://media.githubusercontent.com/media/jhuapl-bio/mytax/master/databases/flukraken2.tar.gz -O /data/databases/flukraken.tar.gz
-
-tar -xvzf /data/databases/flukraken2.tar.gz --directory /data/databases/
-
-
-```
-
-#### j2. Running Kraken2 using the flukraken2 database (Nanopore)
+#### j1. Running Kraken2 using the flukraken2 database (Nanopore)
 
 ```
 mkdir /data/classifications;
 
-kraken2 --db /data/databases/flukraken2 --classified-out flu_BC01#.fq metagenome/flu_ont/flu_BC01.fastq --report classifications/flu_BC01.kraken.report
+kraken2 --db /data/databases/flukraken2 /data/metagenome/flu_ont/BC01.fastq --report /data/classifications/BC01.kraken.report
 
 
 ```
 
-#### j3. Prepping the database for Krona Plots
+#### j2. Prepping the database for Krona Plots
 
-:warning:Requires internet connectivity
 
-```
-ktUpdateTaxonomy.sh /data/databases/flukraken2
-```
-
-#### j4. Creating a Krona Plot of your Tax calls
+Try this out in pavian. First exit from the docker container with `exit`, then run 
 
 ```
-ktImportTaxonomy -i classifications/flu_BC01.kraken.report -o classifications/flu_BC01.kraken.html -tax /data/databases/flukraken2
-
+docker container run -it --rm -p 8004:80 --name pavian florianbw/pavian
 ```
-
-No open the `classifications/flu_BC01.kraken.html` to have a fun Krona plot to play with! Simply double-click it to open it automatically in your browser
 
 :warning: This next section is optional for the workshop. Feel free to try at home. It will require substantial filesize(s) to be downloaded so please be patient!
 
-#### j6. Getting the minikraken database for Kraken2
+#### j3. Getting the minikraken database for Kraken2
 
 ```
 mkdir -p /data/databases
@@ -338,7 +321,7 @@ tar -xvzf --directory /data/databases/minikraken2 /data/databases/minikraken2.ta
 ```
 
 
-#### j7. Running Kraken2 using the flukraken2 database (Nanopore)
+#### j4. Running Kraken2 using the flukraken2 database (Nanopore)
 
 ```
 mkdir /data/classifications;
@@ -348,7 +331,7 @@ kraken2 --db /data/databases/minikraken2 --classified-out sample_metagenome#.fq 
 
 ```
 
-#### j8. Prepping the database for Krona Plots
+#### j5. Prepping the database for Krona Plots
 
 :warning:Requires internet connectivity
 
@@ -356,12 +339,12 @@ kraken2 --db /data/databases/minikraken2 --classified-out sample_metagenome#.fq 
 ktUpdateTaxonomy.sh /data/databases/minikraken2
 ```
 
-#### j9. Creating a Krona Plot of your Tax calls
+#### j6. Creating a Krona Plot of your Tax calls
 
 ```
-ktImportTaxonomy -i classifications/ERR6913101.kraken.report -o classifications/ERR6913101.kraken.html -tax /data/databases/minikraken2/
+ktImportTaxonomy -i /data/classifications/ERR6913101.kraken.report -o /data/classifications/ERR6913101.kraken.html -tax /data/databases/minikraken2/
 
-ktImportTaxonomy -i classifications/sample_metagenome.kraken.report -o classifications/sample_metagenome.kraken.html -tax /data/databases/minikraken2/
+ktImportTaxonomy -i /data/classifications/sample_metagenome.kraken.report -o /data/classifications/sample_metagenome.kraken.html -tax /data/databases/minikraken2/
 
 ```
 
@@ -389,13 +372,31 @@ docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic jhua
 docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic jhuaplbio/basestack_consensus bash
 ```
 
+To you remember this name `jhuaplbio/basestack_consensus`? Where might've you seen it before?
+
+To Demultiplex a run, use `guppy barcoder` on the `fastq_pass` folder of interest
 
 ```
-artic gather --directory /data/20200514_2000_X3_FAN44250_e97e74b4/fastq_pass
+
+guppy_barcoder --require_barcodes_both_ends -i /data/20200514_2000_X3_FAN44250_e97e74b4/fastq_pass -s /data/20200514_2000_X3_FAN44250_e97e74b4/demux --recursive
 
 ```
+
+If you ever need to take all of your files, that have been demultiplexed into individual barcode directories you can do
+
+```
+
+for fastq in $( ls /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03 ); do \
+    cat /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03/$fastq ; \
+done > /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03.fastq
+
+```
+
+You now have created a merged barcode from all the fastqs that are attributed to it! Congrats!
 
 [Medaka](https://github.com/nanoporetech/medaka) is a good tool for generating consensues and variant calling for most organisms. 
+
+We have some demultiplexed SARS-CoV-2 test data available in the test directory. Lets try to make a consensus out of a sample's full fastq file
 
 ```
 
