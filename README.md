@@ -411,31 +411,40 @@ Let's start easy and run artic. This is not in your sandbox Docker Image so firs
 We first need to run 
 
 
-Windows Powershell 
+#### Windows Powershell 
 
 ```
 
-docker container run -w /data/consensus -v $pwd/test-data:/data -it --rm --name artic staphb/artic-ncov2019 artic minion --medaka --medaka-model r941_min_high_g360  --normalise 1000000 --scheme-directory /data/primer-schemes  --scheme-version V3 --read-file /data/demux-fastq_pass/NB03.fastq nCoV-2019/V3 NB03;
+docker container run -w /data/consensus/artic -v $pwd/test-data:/data -it --rm --name artic staphb/artic-ncov2019 artic minion --medaka --medaka-model r941_min_high_g360 --normalise 1000000 --strict --scheme-directory /data/primer-schemes  --scheme-version V3 --read-file /data/demux-fastq_pass/NB03.fastq nCoV-2019/V3 NB03;
 
 ```
 
-Unix
+#### Unix
 
 ```
 
-docker container run -w /data/consensus -v $PWD/test-data:/data -it --rm --name artic staphb/artic-ncov2019 artic minion --medaka --medaka-model r941_min_high_g360  --normalise 1000000 --scheme-directory /data/primer-schemes  --scheme-version V3 --read-file /data/demux-fastq_pass/NB03.fastq nCoV-2019/V3 NB03;
-
-```
-
-Then let's start the consensus build with `medaka` as our argument for consensus models
-
-```
-
-
+docker container run -w /data/consensus/artic -v $PWD/test-data:/data -it --rm --name artic staphb/artic-ncov2019 artic minion --medaka --medaka-model r941_min_high_g360  --strict --normalise 1000000 --scheme-directory /data/primer-schemes  --scheme-version V3 --read-file /data/demux-fastq_pass/NB03.fastq nCoV-2019/V3 NB03;
 
 ```
 
 Finally, to make a report, we can run `multiqc .` in the /data/consensus folder to make a helpful report for variant information
+
+#### Windows Powershell
+
+```
+docker container run -w /data/consensus -v $pwd/test-data:/data -it --rm --name artic staphb/artic-ncov2019 bash -c "export LC_ALL=C.UTF-8; export LANG=C.UTF-8; multiqc . "
+
+```
+
+#### Unix
+
+```
+
+docker container run -w /data/consensus -v $PWD/test-data:/data -it --rm --name artic staphb/artic-ncov2019 bash -c "export LC_ALL=C.UTF-8; export LANG=C.UTF-8; multiqc . "
+
+```
+
+Your output files will be in `test-data/consensus/artic`, primarily you want the `<barcode_name>.consensus.fasta` and `multiqc_report.html` if you made it
 
 
 [Medaka](https://github.com/nanoporetech/medaka) is a good tool for generating consensues and variant calling for most organisms. 
