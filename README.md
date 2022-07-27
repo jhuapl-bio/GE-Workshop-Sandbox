@@ -54,18 +54,16 @@ If we wanted to start up an interactive shell, we would simply override the entr
 docker container run -w /data -v $pwd/test-data:/data --rm -it jhuaplbio/sandbox bash
 ```
 
-
-To Exit once done, type: `exit`
-
-You've successfully run your first interactive docker container!
-
-
 ### Unix Terminal
 
 ```
 docker container run -w /data -v $PWD/test-data:/data --rm -it jhuaplbio/sandbox bash
 
 ```
+
+To Exit once done, type: `exit`
+
+You've successfully run your first interactive docker container!
 
 
 ## 3b. Running without interactive container
