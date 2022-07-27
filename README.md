@@ -1,4 +1,4 @@
-# Sandbox for JHUAPL/Fogarty Workshops
+# Sandbox for JHUAPL/Fogarty/IPT Workshops
 
 ## Introduction 
 
