@@ -48,6 +48,10 @@ A list of installed binaries for bioinformatics teaching is as follows:
 docker container run --rm -it -v $pwd/test-data:/data jhuaplbio/sandbox  bash 
 ```
 
+To Exit once done, type: `exit`
+
+You've successfully run your first interactive docker container!
+
 
 
 ## 3b. Running without interactive container
