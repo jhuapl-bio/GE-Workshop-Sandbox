@@ -414,31 +414,29 @@ We first need to run
 Windows Powershell 
 
 ```
-docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic staphb/artic-ncov2019 bash
+
+docker container run -w /data/consensus -v $pwd/test-data:/data -it --rm --name artic staphb/artic-ncov2019 artic minion --medaka --medaka-model r941_min_high_g360  --normalise 1000000 --scheme-directory /data/primer-schemes  --scheme-version V3 --read-file /data/demux-fastq_pass/NB03.fastq nCoV-2019/V3 NB03;
 
 ```
 
 Unix
 
 ```
-docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/artic-ncov2019 bash
+
+docker container run -w /data/consensus -v $PWD/test-data:/data -it --rm --name artic staphb/artic-ncov2019 artic minion --medaka --medaka-model r941_min_high_g360  --normalise 1000000 --scheme-directory /data/primer-schemes  --scheme-version V3 --read-file /data/demux-fastq_pass/NB03.fastq nCoV-2019/V3 NB03;
 
 ```
 
 Then let's start the consensus build with `medaka` as our argument for consensus models
 
 ```
-mkdir -p /data/consensus && cd /data/consensus && \ 
-    artic minion \
-    --medaka  \
-    --medaka-model r941_min_high_g360 \ 
-    --normalise 1000000  \ 
-    --read-file /data/demux-fastq_pass/NB03.fastq nCoV-2019 NB03;
+
+
+
 ```
 
 Finally, to make a report, we can run `multiqc .` in the /data/consensus folder to make a helpful report for variant information
 
-<!-- --scheme-directory /data/primer_schemes \ -->
 
 [Medaka](https://github.com/nanoporetech/medaka) is a good tool for generating consensues and variant calling for most organisms. 
 
