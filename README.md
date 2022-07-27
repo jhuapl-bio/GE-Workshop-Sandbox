@@ -144,9 +144,8 @@ trimmomatic PE viruses/sars_cov_2/ERR6913101_1.fastq.gz \
     viruses_trimmed/ERR6913101_1.trim.fastq.gz \
     viruses_trimmed/ERR6913101_1.untrim.fastq.gz \
     viruses_trimmed/ERR6913101_2.trim.fastq.gz \
-    viruses_trimmed/ERR6913101_2.untrim.fastq.gz \
-    SLIDINGWINDOW:4:20 \
-    MINLEN:25
+    viruses_trimmed/ERR6913101_2.untrim.fastq.gz 
+    
 ```
 
 Your output files should be (since this is paired-end reads) as the `1.trim.fastq.gz` and `2.trim.fastq.gz` in `viruses_trimmed`
@@ -179,7 +178,7 @@ mkdir -p /data/alignments/minimap2 && \
 minimap2 \
     -x map-ont \
     -a /data/reference/nCoV-2019.reference.fasta \
-    -o /data/alignments/minimap2/alignment.sam demux-fastq_pass/NB03.fastq
+    -o /data/alignments/minimap2/NB03.sam demux-fastq_pass/NB03.fastq
 
 ```
 
@@ -204,14 +203,23 @@ Next, let's take a look at the equivalent with minimap2 for the long reads
 
 samtools view \
     -S \
-    -b /data/alignments/minimap2/alignment.sam > /data/alignments/minimap2/alignment.bam
+    -b /data/alignments/minimap2/NB03.sam > /data/alignments/minimap2/NB03.bam
 
 ```
 
 ### d1. Prepping for Variant Calling - Sorting BAM
 
+
+With Bowtie2 Short Reads output
+
 ```
 samtools sort alignments/ERR6913101_alignments.bam > alignments/ERR6913101_alignments_sorted.bam
+```
+
+With Minimap2 Long Reads output
+
+```
+samtools sort /data/alignments/minimap2/NB03.bam > /data/alignments/minimap2/NB03_sorted.bam
 ```
 
 ### d2. Prepping for Variant Calling - Indexing
@@ -248,10 +256,10 @@ plot-bamstats \
 Next, the long reads doing the same process except on the minimap2 alignment output file (.bam)
 
 ```
-samtools stats /data/alignments/minimap2/alignment.bam > /data/alignments/minimap2/alignment.stats
+samtools stats /data/alignments/minimap2/NB03.bam > /data/alignments/minimap2/NB03.stats
 
 plot-bamstats \
-    -p alignments/minimap2/plots_bamstats alignments/minimap2/alignment.stats
+    -p alignments/minimap2/plots_bamstats alignments/minimap2/NB03.stats
 
 ```
 
@@ -285,9 +293,6 @@ fastqc \
 
 ### j. Running Classification with Kraken2
 
-:warning:Requires internet to download the minikraken database. You can also get it from [here](https://ccb.jhu.edu/software/kraken2/index.shtml?t=downloads)
-
-
 #### j1. Running Kraken2 using the flukraken2 database (Nanopore)
 
 ```
@@ -304,10 +309,16 @@ kraken2 --db /data/databases/flukraken2 /data/metagenome/flu_ont/BC01.fastq --re
 Try this out in pavian. First exit from the docker container with `exit`, then run 
 
 ```
-docker container run -it --rm -p 8004:80 --name pavian florianbw/pavian
+docker container run -it --rm -p 8004:80  florianbw/pavian
+
 ```
 
+:warning: If you receive an error about another container using the same port (like 8004) check it with `docker container ls`. You can also remove all containers that might be running with `docker container prune -f`
+
 :warning: This next section is optional for the workshop. Feel free to try at home. It will require substantial filesize(s) to be downloaded so please be patient!
+
+:warning:Requires internet to download the minikraken database. You can also get it from [here](https://ccb.jhu.edu/software/kraken2/index.shtml?t=downloads)
+
 
 #### j3. Getting the minikraken database for Kraken2
 
@@ -353,7 +364,7 @@ Now take a look at the resulting `classifications/sample_metagenome.kraken.html`
 #### k. Creating a consensus genome from Nanopore Reads using Medaka
 
 
-:warning: You need to use a different Docker image than sandbox for this. If you're in a Docker container alredy you need to type: `exit`
+:warning: You need to use a different Docker image than sandbox for this. If you're in a Docker container already you need to type: `exit`
 
 You may have already noticed that we have a demultiplexed set of files in the `/data/demux-fastq_pass` folder. However, this is not likely to happen when you have a traditional run from MinKNOW. Usually it will spit out a set of fastq files rather than just one single one per sample. To gather them all up, we can run one of the subcommands called `artic gather`. This will push all fastq files into a single one like what we see in `/data/demux-fastq_pass`
 
@@ -363,16 +374,15 @@ Let's first enter our new image by running. Remember that the name for the curre
 ### Windows Powershell
 
 ```
-docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic jhuaplbio/basestack_consensus bash
+docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic jhuaplbio/artic bash
 ```
 
 ### Unix
 
 ```
-docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic jhuaplbio/basestack_consensus bash
+docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic jhuaplbio/artic bash
 ```
 
-To you remember this name `jhuaplbio/basestack_consensus`? Where might've you seen it before?
 
 To Demultiplex a run, use `guppy barcoder` on the `fastq_pass` folder of interest
 
@@ -394,51 +404,109 @@ done > /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03.fastq
 
 You now have created a merged barcode from all the fastqs that are attributed to it! Congrats!
 
+## L. Consensus Generation
+
+Let's start easy and run artic. This is not in your sandbox Docker Image so first, we need to `exit`
+
+We first need to run 
+
+
+Windows Powershell 
+
+```
+docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic staphb/artic-ncov2019 bash
+
+```
+
+Unix
+
+```
+docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/artic-ncov2019 bash
+
+```
+
+Then let's start the consensus build with `medaka` as our argument for consensus models
+
+```
+artic minion \
+    --medaka  \
+    --medaka-model r941_min_high_g360 \
+    --normalise 1000000 \
+    --read-file /data/demux-fastq_pass/NB03.fastq \
+    nCoV-2019 NB03;
+```
+<!-- --scheme-directory /data/primer_schemes \ -->
+
 [Medaka](https://github.com/nanoporetech/medaka) is a good tool for generating consensues and variant calling for most organisms. 
 
 We have some demultiplexed SARS-CoV-2 test data available in the test directory. Lets try to make a consensus out of a sample's full fastq file
 
 ```
 
-conda activate artic-ncov2019 && \
+conda activate consensus && \
     mkdir -p /data/consensus/medaka && \
     cd /data/consensus/medaka
 
 medaka_consensus \
-    -i /data/demux-fastq_pass/NB11.fastq \
+    -i /data/demux-fastq_pass/NB03.fastq \
     -d /data/reference/nCoV-2019.reference.fasta \
     -o /data/consensus/medaka \
     -m r941_min_high_g360
 
 ```
 
-However, if we're working with a select few organisms utilizing a primer scheme, we should opt for the artic bioinformatics pipeline. This pipeline can use both nanopolish and medaka as it's primary variant and consensus calling set of scripts. In addition, it will perform the necessary trimming/pre-processing for you on your demultiplexed fastq files. It also comes with several subcommands that can help prep your data, like concatenated all of your fastq files into a single one to prepare for consensus building, no matter the purpose. 
+## Creating your Own Ivar Consensus Runs using 3rd party Docker Images
+
+But, what if we wanted to run our own images one by one NOT in an interactive environment. 
+
+
+If we're working with a select few organisms utilizing a primer scheme for Ilumina, we should opt for the ivar bioinformatics pipeline. This pipeline can use both nanopolish and medaka as it's primary variant and consensus calling set of scripts. In addition, it will perform the necessary trimming/pre-processing for you on your demultiplexed fastq files. It also comes with several subcommands that can help prep your data
 
 First, we need to get the primer schemes for SARS-CoV-2 (our organism of interest for this example). These primers will be used for the artic minion process. Luckily, we have this present in your test-data/primer-schemes
 
 
 This is pulling in the set of primer schemes directly from the artic pipeline toolkit's set of primer schemes for EBOLA, SARS-CoV-2, and Nipah
 
-```
-
-artic minion \
-    --medaka \
-    --medaka-model r941_min_high_g360 \
-    --normalise 1000000 \
-    --read-file /data/demux-fastq_pass/NB11.fastq \
-    ncov-2019/V3 NB11;
-
-cd /data 
-
-```
 
 
-## Creating your Own Analysis Runs using 3rd party Docker Images
+1. 
+
+| Command | Platform |
+| ------- | -------- |
+| `docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic staphb/ivar bash -c "ivar trim -i /data/alignments/minimap2/NB03_sorted.bam -b /data/primer-schemes/nCoV-2019/V3/nCoV-2019.primer.bed -p /data/alignments/minimap2/NB03_trimmed_unsorted.bam"` | Windows Powershell |
+| `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "ivar trim -i /data/alignments/minimap2/NB03_sorted.bam -b /data/primer-schemes/nCoV-2019/V3/nCoV-2019.primer.bed -p /data/alignments/minimap2/NB03_trimmed_unsorted.bam"` | Unix |
+
+
+2. 
+
+
+| Command | Platform |
+| ------- | -------- |
+| `docker container run -w /data -v  $pwd/test-data:/data -it --rm --name artic staphb/ivar bash -c "samtools sort -o /data/alignments/minimap2/NB03_trimmed_unsorted.bam > /data/alignments/minimap2/NB03_trimmed_sorted.bam"` | Windows Powershell |
+| `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "samtools sort -o /data/alignments/minimap2/NB03_trimmed_unsorted.bam > /data/alignments/minimap2/NB03_trimmed_sorted.bam"` | Unix |
+
+3. 
+
+
+| Command | Platform |
+| ------- | -------- |
+| `docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic staphb/ivar bash -c "mkdir /data/variants/; samtools mpileup -A -aa -d 0 -Q 0 --reference /data/reference/nCoV-2019.reference.fasta  /data/alignments/minimap2/NB03_trimmed_sorted.bam > /data/variants/NB03_pileup.txt"` | Windows Powershell |
+| `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "mkdir /data/variants/; samtools mpileup -A -aa -d 0 -Q 0 --reference /data/reference/nCoV-2019.reference.fasta  /data/alignments/minimap2/NB03_trimmed_sorted.bam > /data/variants/NB03_pileup.txt"` | Unix |
+
+4. 
+
+| Command | Platform |
+| ------- | -------- |
+| `docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic staphb/ivar bash -c "cat /data/variants/NB03_pileup.txt |  ivar consensus  -p /data/consensus/consensus.fa  -m 10 -t 0.5 -n N"` | Windows Powershell |
+| `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "cat /data/variants/NB03_pileup.txt |  ivar consensus  -p /data/consensus/consensus.fa  -m 10 -t 0.5 -n N"` | Unix |
+
+
+
+## Creating your Own Medaka Consensus Runs using 3rd party Docker Images
 
 So now we've used our single sandbox Docker Image. But what if, for example, you have a script that isn't available in this pre-made image? For example, `medaka`, which is as we described previously is available in sandbox but also as a standlone Docker Image from Docker hub [here](https://hub.docker.com/r/staphb/medaka)
 
 Let's run a consensus run, like we did in the consensus pipeline without pre-installing it AND automatically running our command once it is downloaded. 
-
 
 
 | Command | Platform |
@@ -451,5 +519,4 @@ Notice something interesting....
 We can immediately run a command directly from our Shell, and have all dependencies automatically installed and our command run. This is one of the many strengths of using Docker as you have a fully runnable command with all required dependencies right out of the box!
 
 That's it for the copy+paste section of the Docker portion of this workshop. Now that you've hopefully had a grasp on the inner-workings of Docker, we can move on to making and installation for your own pipeline(s)!
-
 
