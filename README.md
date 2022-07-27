@@ -1,4 +1,4 @@
-# Sandbox for JHUAPL/Fogarty/IPT Advanced Epi Workshop Part 1
+# Sandbox for JHUAPL/Fogarty Workshops
 
 ## Introduction 
 
@@ -428,13 +428,16 @@ docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic stap
 Then let's start the consensus build with `medaka` as our argument for consensus models
 
 ```
-artic minion \
+mkdir -p /data/consensus && cd /data/consensus && \ 
+    artic minion \
     --medaka  \
-    --medaka-model r941_min_high_g360 \
-    --normalise 1000000 \
-    --read-file /data/demux-fastq_pass/NB03.fastq \
-    nCoV-2019 NB03;
+    --medaka-model r941_min_high_g360 \ 
+    --normalise 1000000  \ 
+    --read-file /data/demux-fastq_pass/NB03.fastq nCoV-2019 NB03;
 ```
+
+Finally, to make a report, we can run `multiqc .` in the /data/consensus folder to make a helpful report for variant information
+
 <!-- --scheme-directory /data/primer_schemes \ -->
 
 [Medaka](https://github.com/nanoporetech/medaka) is a good tool for generating consensues and variant calling for most organisms. 
