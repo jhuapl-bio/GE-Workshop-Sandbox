@@ -18,9 +18,9 @@ docker build . -t jhuaplbio/sandbox
 
 ## 2. Test Data Retrieval 
 
-If you have gdown on your system, download it here with: `gdown 1zrgwheJxhMTvd7zu0fuRhVYYM0aGY5XS -O ./test-data.zip` 
+<!-- If you have gdown on your system, download it here with: `gdown 1zrgwheJxhMTvd7zu0fuRhVYYM0aGY5XS -O ./test-data.zip` 
 
-else 
+else  -->
 
 Get the test data from [here](https://drive.google.com/file/d/1zrgwheJxhMTvd7zu0fuRhVYYM0aGY5XS/view?usp=sharing). Place it where you have this repository to make it easier to track. 
 
@@ -44,6 +44,14 @@ A list of installed binaries for bioinformatics teaching is as follows:
 
 ## 3a. Running an interactive container 
 
+```
+docker container run --rm -it -v $pwd/test-data:/data jhuaplbio/sandbox  bash 
+```
+
+To Exit once done, type: `exit`
+
+You've successfully run your first interactive docker container!
+
 
 If we wanted to start up an interactive shell, we would simply override the entry command (the command run at start) with `bash` like so:
 
@@ -60,8 +68,6 @@ docker container run -w /data -v $pwd/test-data:/data --rm -it jhuaplbio/sandbox
 docker container run -w /data -v $PWD/test-data:/data --rm -it jhuaplbio/sandbox bash
 
 ```
-
-
 
 
 ## 3b. Running without interactive container
