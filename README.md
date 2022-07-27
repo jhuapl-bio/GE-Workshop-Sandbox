@@ -1,4 +1,4 @@
-# Sandbox for JHUAPL/Fogarty/IPT Workshops
+# Sandbox for JHUAPL/Fogarty/IPT Advanced Epi Workshop Part 1
 
 ## Introduction 
 
