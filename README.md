@@ -44,29 +44,9 @@ A list of installed binaries for bioinformatics teaching is as follows:
 
 ## 3a. Running an interactive container 
 
-```
-docker container run --rm -it jhuaplbio/sandbox -v $pwd/test-data:/data bash -c "conda activate sandbox"
-```
-
-
-
-## 3b. Running without interactive container
-
-You can of course run all things without being in the interactive shell, which simulates the linux environment you'd be working in. It would look like this for each and all commands going forwards (e.g. `minimap2`, `samtools`, etc.)
-
-### Windows Powershell
-
-```
-docker container run -w /data -v $pwd/test-data:/data --rm -it jhuaplbio/sandbox 
-```
-
-### Unix Terminal
-
-```
-docker container run -w /data -v $PWD/test-data:/data --rm -it jhuaplbio/sandbox <command>
-```
 
 If we wanted to start up an interactive shell, we would simply override the entry command (the command run at start) with `bash` like so:
+
 
 ### Windows Powershell
 
@@ -80,6 +60,26 @@ docker container run -w /data -v $pwd/test-data:/data --rm -it jhuaplbio/sandbox
 docker container run -w /data -v $PWD/test-data:/data --rm -it jhuaplbio/sandbox bash
 
 ```
+
+
+
+
+## 3b. Running without interactive container
+
+You can of course run all things without being in the interactive shell, which simulates the linux environment you'd be working in. It would look like this for each and all commands going forwards (e.g. `minimap2`, `samtools`, etc.)
+
+### Windows Powershell
+
+```
+docker container run -w /data -v $pwd/test-data:/data --rm -it jhuaplbio/sandbox <command>
+```
+
+### Unix Terminal
+
+```
+docker container run -w /data -v $PWD/test-data:/data --rm -it jhuaplbio/sandbox <command>
+```
+
 
 :warning:
 
@@ -340,7 +340,7 @@ artic gather --directory /data/20200514_2000_X3_FAN44250_e97e74b4/fastq_pass
 
 ```
 
-conda activate medaka && \
+conda activate artic-ncov2019 && \
     mkdir -p /data/consensus/medaka && \
     cd /data/consensus/medaka
 
@@ -377,3 +377,25 @@ artic minion --medaka \
 cd /data 
 
 ```
+
+
+## Creating your Own Analysis Runs using 3rd party Docker Images
+
+So now we've used our single sandbox Docker Image. But what if, for example, you have a script that isn't available in this pre-made image? For example, `medaka`, which is as we described previously is available in sandbox but also as a standlone Docker Image from Docker hub [here](https://hub.docker.com/r/staphb/medaka)
+
+Let's run a consensus run, like we did in the consensus pipeline without pre-installing it AND automatically running our command once it is downloaded. 
+
+
+
+| Command | Platform |
+| ------- | -------- |
+| `docker container run -it -v $pwd/test-data:/data -w /data staphb/medaka bash -c "medaka_consensus -i /data/demux-fastq_pass/NB03.fastq -d /data/reference/nCoV-2019.reference.fasta -o /data/output/medaka_consensus -m r941_min_high_g303 -f"` | Windows Powershell |
+| `docker container run -it -v $PWD/test-data:/data -w /data staphb/medaka bash -c "medaka_consensus -i /data/demux-fastq_pass/NB03.fastq -d /data/reference/nCoV-2019.reference.fasta -o /data/output/medaka_consensus -m r941_min_high_g303 -f"` | Unix |
+
+Notice something interesting....
+
+We can immediately run a command directly from our Shell, and have all dependencies automatically installed and our command run. This is one of the many strengths of using Docker as you have a fully runnable command with all required dependencies right out of the box!
+
+That's it for the copy+paste section of the Docker portion of this workshop. Now that you've hopefully had a grasp on the inner-workings of Docker, we can move on to making and installation for your own pipeline(s)!
+
+
