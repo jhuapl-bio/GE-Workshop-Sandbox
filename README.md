@@ -444,7 +444,7 @@ docker container run -w /data/consensus -v $pwd/test-data:/data -it --rm --name 
 docker container run -w /data/consensus -v $PWD/test-data:/data -it --rm --name artic staphb/artic-ncov2019 bash -c "export LC_ALL=C.UTF-8; export LANG=C.UTF-8; multiqc . "
 
 ```
-
+<!-- 
 Your output files will be in `test-data/consensus/artic`, primarily you want the `<barcode_name>.consensus.fasta` and `multiqc_report.html` if you made it
 
 
@@ -464,7 +464,7 @@ medaka_consensus \
     -o /data/consensus/medaka \
     -m r941_min_high_g360
 
-```
+``` -->
 
 <!-- 
 ## Creating your Own Ivar Consensus Runs using 3rd party Docker Images
@@ -486,7 +486,7 @@ This is pulling in the set of primer schemes directly from the artic pipeline to
 | Command | Platform |
 | ------- | -------- |
 | `docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic staphb/ivar bash -c "ivar trim -i /data/alignments/minimap2/NB03_sorted.bam -b /data/primer-schemes/nCoV-2019/V3/nCoV-2019.primer.bed -p /data/alignments/minimap2/NB03_trimmed_unsorted.bam"` | Windows Powershell |
-| `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "ivar trim -i /data/alignments/minimap2/NB03_sorted.bam -b /data/primer-schemes/nCoV-2019/V3/nCoV-2019.primer.bed -p /data/alignments/minimap2/NB03_trimmed_unsorted.bam"` | Unix |
+| `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "ivar trim -i /data/alignments/ERR6913101_alignments_sorted.bam -b /data/primer-schemes/nCoV-2019/V3/nCoV-2019.primer.bed -p /data/alignments/ERR6913101_trimmed_unsorted.bam"` | Unix |
 
 
 2. 
@@ -495,15 +495,15 @@ This is pulling in the set of primer schemes directly from the artic pipeline to
 | Command | Platform |
 | ------- | -------- |
 | `docker container run -w /data -v  $pwd/test-data:/data -it --rm --name artic staphb/ivar bash -c "samtools sort -o /data/alignments/minimap2/NB03_trimmed_unsorted.bam > /data/alignments/minimap2/NB03_trimmed_sorted.bam"` | Windows Powershell |
-| `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "samtools sort -o /data/alignments/minimap2/NB03_trimmed_unsorted.bam > /data/alignments/minimap2/NB03_trimmed_sorted.bam"` | Unix |
+| `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "samtools sort -o /data/alignments/ERR6913101_trimmed_unsorted.bam > /data/alignments/ERR6913101_trimmed_sorted.bam"` | Unix |
 
 3. 
 
 
 | Command | Platform |
 | ------- | -------- |
-| `docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic staphb/ivar bash -c "mkdir /data/variants/; samtools mpileup -A -aa -d 0 -Q 0 --reference /data/reference/nCoV-2019.reference.fasta  /data/alignments/minimap2/NB03_trimmed_sorted.bam > /data/variants/NB03_pileup.txt"` | Windows Powershell |
-| `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "mkdir /data/variants/; samtools mpileup -A -aa -d 0 -Q 0 --reference /data/reference/nCoV-2019.reference.fasta  /data/alignments/minimap2/NB03_trimmed_sorted.bam > /data/variants/NB03_pileup.txt"` | Unix |
+| `docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic staphb/ivar bash -c "mkdir /data/variants/; samtools mpileup -A -aa -d 0 -Q 0 --reference /data/reference/nCoV-2019.reference.fasta  /data/alignments/ERR6913101_trimmed_sorted.bam > /data/variants/ERR6913101_pileup.txt"` | Windows Powershell |
+| `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "mkdir /data/variants/; samtools mpileup -A -aa -d 0 -Q 0 --reference /data/reference/nCoV-2019.reference.fasta  /data/alignments/ERR6913101_trimmed_sorted.bam > /data/variants/ERR6913101_pileup.txt"` | Unix |
 
 
 4. 
