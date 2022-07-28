@@ -10,12 +10,6 @@ This Repo is intended to be run with `docker` on Windows, Mac OS, or most Linux 
 docker pull jhuaplbio/sandbox
 ```
 
-## 1b. Project setup build
-
-```
-docker build . -t jhuaplbio/sandbox
-```
-
 ## 2. Test Data Retrieval 
 
 <!-- If you have gdown on your system, download it here with: `gdown 1zrgwheJxhMTvd7zu0fuRhVYYM0aGY5XS -O ./test-data.zip` 
