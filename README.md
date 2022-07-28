@@ -52,13 +52,13 @@ If we wanted to start up an interactive shell, we would simply override the entr
 ### Windows Powershell
 
 ```
-docker container run -w /data -v $pwd/test-data:/data --rm -it jhuaplbio/sandbox bash
+docker container run -w /data -v $pwd/test-data:/data --rm -it ubuntu bash
 ```
 
 ### Unix Terminal
 
 ```
-docker container run -w /data -v $PWD/test-data:/data --rm -it jhuaplbio/sandbox bash
+docker container run -w /data -v $PWD/test-data:/data --rm -it ubuntu bash
 
 ```
 
@@ -449,7 +449,7 @@ Your output files will be in `test-data/consensus/artic`, primarily you want the
 
 [Medaka](https://github.com/nanoporetech/medaka) is a good tool for generating consensues and variant calling for most organisms. 
 
-We have some demultiplexed SARS-CoV-2 test data available in the test directory. Lets try to make a consensus out of a sample's full fastq file
+We have some demultiplexed SARS-CoV-2 test data available in the test directory. Lets try to make a consensus out of a sample's full fastq file. Let's ASSUME that we did not use any amplicons in the same fastq file we've been working on that is long reads
 
 ```
 
@@ -465,6 +465,7 @@ medaka_consensus \
 
 ```
 
+<!-- 
 ## Creating your Own Ivar Consensus Runs using 3rd party Docker Images
 
 But, what if we wanted to run our own images one by one NOT in an interactive environment. 
@@ -503,13 +504,14 @@ This is pulling in the set of primer schemes directly from the artic pipeline to
 | `docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic staphb/ivar bash -c "mkdir /data/variants/; samtools mpileup -A -aa -d 0 -Q 0 --reference /data/reference/nCoV-2019.reference.fasta  /data/alignments/minimap2/NB03_trimmed_sorted.bam > /data/variants/NB03_pileup.txt"` | Windows Powershell |
 | `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "mkdir /data/variants/; samtools mpileup -A -aa -d 0 -Q 0 --reference /data/reference/nCoV-2019.reference.fasta  /data/alignments/minimap2/NB03_trimmed_sorted.bam > /data/variants/NB03_pileup.txt"` | Unix |
 
+
 4. 
 
 | Command | Platform |
 | ------- | -------- |
-| `docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic staphb/ivar bash -c "cat /data/variants/NB03_pileup.txt |  ivar consensus  -p /data/consensus/consensus.fa  -m 10 -t 0.5 -n N"` | Windows Powershell |
-| `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "cat /data/variants/NB03_pileup.txt |  ivar consensus  -p /data/consensus/consensus.fa  -m 10 -t 0.5 -n N"` | Unix |
-
+| ```docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic staphb/ivar bash -c "cat /data/variants/NB03_pileup.txt \|  ivar consensus  -p /data/consensus/consensus.fa  -m 10 -t 0.5 -n N" ``` | Windows Powershell |
+| `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "cat /data/variants/NB03_pileup.txt \|  ivar consensus  -p /data/consensus/consensus.fa  -m 10 -t 0.5 -n N" ` | Unix |
+ -->
 
 
 ## Creating your Own Medaka Consensus Runs using 3rd party Docker Images
