@@ -195,6 +195,10 @@ samtools sort /data/alignments/minimap2/NB03.bam > /data/alignments/minimap2/NB0
 samtools index alignments/ERR6913101_alignments_sorted.bam 
 ```
 
+```
+samtools index alignments/minimap2/NB03_sorted.bam 
+```
+
 ### e. Variant Calling
 
 ```
@@ -207,6 +211,15 @@ bcftools mpileup \
             -o alignments/ERR6913101_alignment.vcf
 ```
 
+```
+bcftools mpileup \
+    -f reference/nCoV-2019.reference.fasta \
+    alignments/minimap2/NB03_sorted.bam \
+        | bcftools call \
+            -mv \
+            -Ov \
+            -o alignments/minimap2/NB03_alignment.vcf
+```
 
 ### f.2 Plotting with Bamstats
 
