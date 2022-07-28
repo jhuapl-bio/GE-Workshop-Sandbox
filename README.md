@@ -42,24 +42,6 @@ A list of installed binaries for bioinformatics teaching is as follows:
 
 If we wanted to start up an interactive shell, we would simply override the entry command (the command run at start) with `bash` like so:
 
-
-### Windows Powershell
-
-```
-docker container run -w /data -v $pwd/test-data:/data --rm -it ubuntu bash
-```
-
-### Unix Terminal
-
-```
-docker container run -w /data -v $PWD/test-data:/data --rm -it ubuntu bash
-
-```
-
-To Exit once done, type: `exit`
-
-You've successfully run your first interactive docker container!
-
 To download and run our primary sandbox container do
 
 ### Windows Powershell
@@ -74,6 +56,9 @@ docker container run -w /data -v $pwd/test-data:/data --rm -it jhuaplbio/sandbox
 docker container run -w /data -v $PWD/test-data:/data --rm -it jhuaplbio/sandbox bash
 ```
 
+To Exit a contauner once you're done, type: `exit`
+
+You've successfully run your first interactive docker container!
 
 ## 3b. Running without interactive container
 
