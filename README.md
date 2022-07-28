@@ -96,9 +96,9 @@ docker container run -w /data -v $PWD/test-data:/data --rm -it jhuaplbio/sandbox
 
 **All commands going forward will be assuming that we're working in the interactive environment that was just mentioned so make sure to run that before continuing. Your terminal once in should look something like:**
 
-```
+
 (base) root@addcf87af2d3:/# 
-```
+
 
 ## 5. Activating Your Conda Environment
 
@@ -111,36 +111,9 @@ conda activate sandbox
 
 Your terminal screen should look like: 
 
-```
-(sandbox) root@addcf87af2d3:/# 
-```
 
-Let's check our current packages installed in this environment with: `conda list` 
+(sandbox) root@addcf87af2d3:/# Notice the (sandbox) on the left side
 
-```
-(sandbox) root@addcf87af2d3:/# conda list
-# packages in environment at /opt/conda/envs/sandbox:
-#
-# Name                    Version                   Build  Channel
-_libgcc_mutex             0.1                        main  
-biopython                 1.79                     pypi_0    pypi
-blast                     2.10.1          pl526he19e7b1_3    bioconda
-bowtie2                   2.4.1            py38he513fc3_0    bioconda
-brotlipy                  0.7.0           py38h27cfd23_1003  
-bzip2                     1.0.8                h7b6447c_0  
-...
-```
-
-If you ever forget the name of your environments, you can run `conda env list` where the `*` indicates which one you're in currently.
-
-```
-(sandbox) root@addcf87af2d3:/# conda env list
-# conda environments:
-#
-base                     /opt/conda
-consensus                /opt/conda/envs/consensus
-sandbox               *  /opt/conda/envs/sandbox
-```
 
 ## Running Test Data throught the bioinformatic commands
 
