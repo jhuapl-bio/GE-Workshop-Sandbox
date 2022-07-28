@@ -144,7 +144,8 @@ trimmomatic PE viruses/sars_cov_2/ERR6913101_1.fastq.gz \
     viruses_trimmed/ERR6913101_1.trim.fastq.gz \
     viruses_trimmed/ERR6913101_1.untrim.fastq.gz \
     viruses_trimmed/ERR6913101_2.trim.fastq.gz \
-    viruses_trimmed/ERR6913101_2.untrim.fastq.gz 
+    viruses_trimmed/ERR6913101_2.untrim.fastq.gz \
+    MINLEN:25
     
 ```
 
