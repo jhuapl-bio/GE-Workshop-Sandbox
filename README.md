@@ -60,6 +60,20 @@ To Exit once done, type: `exit`
 
 You've successfully run your first interactive docker container!
 
+To download and run our primary sandbox container do
+
+### Windows Powershell
+
+```
+docker container run -w /data -v $pwd/test-data:/data --rm -it jhuaplbio/sandbox bash
+```
+
+### Unix Terminal
+
+```
+docker container run -w /data -v $PWD/test-data:/data --rm -it jhuaplbio/sandbox bash
+```
+
 
 ## 3b. Running without interactive container
 
