@@ -362,13 +362,13 @@ To Demultiplex a run, use `guppy barcoder` on the `fastq_pass` folder of interes
 ### Windows Powershell
 
 ```
-docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic genomicpariscentre/guppy guppy_barcoder --require_barcodes_both_ends -i /data/20200514_2000_X3_FAN44250_e97e74b4/fastq_pass -s /data/20200514_2000_X3_FAN44250_e97e74b4/demux --recursive
+docker container run -w /data -v $pwd/test-data:/data  --rm --name articdemux genomicpariscentre/guppy guppy_barcoder --require_barcodes_both_ends -i /data/20200514_2000_X3_FAN44250_e97e74b4/fastq_pass -s /data/20200514_2000_X3_FAN44250_e97e74b4/demux --recursive
 ```
 
 ### Unix
 
 ```
-docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic genomicpariscentre/guppy guppy_barcoder --require_barcodes_both_ends -i /data/20200514_2000_X3_FAN44250_e97e74b4/fastq_pass -s /data/20200514_2000_X3_FAN44250_e97e74b4/demux --recursive
+docker container run -w /data -v $PWD/test-data:/data --rm --name articdemux genomicpariscentre/guppy guppy_barcoder --require_barcodes_both_ends -i /data/20200514_2000_X3_FAN44250_e97e74b4/fastq_pass -s /data/20200514_2000_X3_FAN44250_e97e74b4/demux --recursive
 ```
 
 #### k.2 Gathering multiple fastqs 
@@ -390,23 +390,25 @@ The easier method is to simply use the `artic` command from `staphb/artic-ncov20
 #### Windows Powershell
 
 ```
-docker container run -w /data/20200514_2000_X3_FAN44250_e97e74b4/demux -v $pwd/test-data:/data -it --rm --name articgather staphb/artic-ncov2019 artic guppyplex --directory /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03 --output /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03.fastq
+docker container run -w /data/20200514_2000_X3_FAN44250_e97e74b4/demux -v $pwd/test-data:/data --rm --name articgather staphb/artic-ncov2019 artic guppyplex --directory /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03 --output /data/demultiplexed/barcode03.fastq
 ```
 
 #### Unix
 
 ```
-docker container run -w /data/20200514_2000_X3_FAN44250_e97e74b4/demux -v $PWD/test-data:/data -it --rm --name articgather staphb/artic-ncov2019 artic guppyplex --directory /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03 --output /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03.fastq
+docker container run -w /data/20200514_2000_X3_FAN44250_e97e74b4/demux -v $PWD/test-data:/data --rm --name articgather staphb/artic-ncov2019 artic guppyplex --directory /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03 --output /data/demultiplexed/barcode03.fastq
 ```
 
-IF you look at the `demux-fastq_pass` folder, you should see that the `NB03.fastq` is the same length as the `demultiplexed/NB03.fastq` file you made just now. 
+IF you look at the `demux-fastq_pass` folder, you should see that the `NB03.fastq` is the same length as the `demultiplexed/barcode03.fastq` file you made just now. 
 
 
 ```
 
-for fastq in $( ls /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03 ); do \
-    cat /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03/$fastq ; \
-done > /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03.fastq
+mkdir -p test-data/demultiplexed
+
+for fastq in $( ls test-data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03 ); do \
+    cat test-data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03/$fastq ; \
+done > test-data/demultiplexed/barcode03.fastq
 
 ```
 
@@ -423,7 +425,7 @@ We first need to run
 
 ```
 
-docker container run -w /data/consensus/artic -v $pwd/test-data:/data -it --rm --name artic staphb/artic-ncov2019 artic minion --medaka --medaka-model r941_min_high_g360 --normalise 1000000 --strict --scheme-directory /data/primer-schemes  --scheme-version V3 --read-file /data/demux-fastq_pass/NB03.fastq nCoV-2019/V3 NB03;
+docker container run -w /data/consensus/artic -v $pwd/test-data:/data  --rm --name articconsensus staphb/artic-ncov2019 artic minion --medaka --medaka-model r941_min_high_g360  --strict --normalise 1000000 --scheme-directory /data/primer-schemes  --scheme-version V3 --read-file /data/demultiplexed/barcode03.fastq nCoV-2019/V3 barcode03;
 
 ```
 
@@ -431,7 +433,7 @@ docker container run -w /data/consensus/artic -v $pwd/test-data:/data -it --rm -
 
 ```
 
-docker container run -w /data/consensus/artic -v $PWD/test-data:/data -it --rm --name artic staphb/artic-ncov2019 artic minion --medaka --medaka-model r941_min_high_g360  --strict --normalise 1000000 --scheme-directory /data/primer-schemes  --scheme-version V3 --read-file /data/demux-fastq_pass/NB03.fastq nCoV-2019/V3 NB03;
+docker container run -w /data/consensus/artic -v $PWD/test-data:/data  --rm --name articconsensus staphb/artic-ncov2019 artic minion --medaka --medaka-model r941_min_high_g360  --strict --normalise 1000000 --scheme-directory /data/primer-schemes  --scheme-version V3 --read-file /data/demultiplexed/barcode03.fastq nCoV-2019/V3 barcode03;
 
 ```
 
@@ -440,7 +442,7 @@ Finally, to make a report, we can run `multiqc .` in the /data/consensus folder 
 #### Windows Powershell
 
 ```
-docker container run -w /data/consensus -v $pwd/test-data:/data -it --rm --name artic staphb/artic-ncov2019 bash -c "export LC_ALL=C.UTF-8; export LANG=C.UTF-8; multiqc . "
+docker container run -w /data/consensus -v $pwd/test-data:/data --rm --name articreport staphb/artic-ncov2019 bash -c "export LC_ALL=C.UTF-8; export LANG=C.UTF-8; multiqc . "
 
 ```
 
@@ -448,7 +450,7 @@ docker container run -w /data/consensus -v $pwd/test-data:/data -it --rm --name 
 
 ```
 
-docker container run -w /data/consensus -v $PWD/test-data:/data -it --rm --name artic staphb/artic-ncov2019 bash -c "export LC_ALL=C.UTF-8; export LANG=C.UTF-8; multiqc . "
+docker container run -w /data/consensus -v $PWD/test-data:/data  --rm --name articreport staphb/artic-ncov2019 bash -c "export LC_ALL=C.UTF-8; export LANG=C.UTF-8; multiqc . "
 
 ```
 
@@ -492,8 +494,8 @@ This is pulling in the set of primer schemes directly from the artic pipeline to
 
 | Command | Platform |
 | ------- | -------- |
-| `docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic staphb/ivar bash -c "ivar trim -i /data/alignments/minimap2/NB03_sorted.bam -b /data/primer-schemes/nCoV-2019/V3/nCoV-2019.primer.bed -p /data/alignments/minimap2/NB03_trimmed_unsorted.bam"` | Windows Powershell |
-| `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "ivar trim -i /data/alignments/ERR6913101_alignments_sorted.bam -b /data/primer-schemes/nCoV-2019/V3/nCoV-2019.primer.bed -p /data/alignments/ERR6913101_trimmed_unsorted.bam"` | Unix |
+| `docker container run -w /data -v $pwd/test-data:/data --rm --name artic staphb/ivar bash -c "ivar trim -i /data/alignments/minimap2/NB03_sorted.bam -b /data/primer-schemes/nCoV-2019/V3/nCoV-2019.primer.bed -p /data/alignments/minimap2/NB03_trimmed_unsorted.bam"` | Windows Powershell |
+| `docker container run -w /data -v $PWD/test-data:/data  --rm --name artic staphb/ivar bash -c "ivar trim -i /data/alignments/ERR6913101_alignments_sorted.bam -b /data/primer-schemes/nCoV-2019/V3/nCoV-2019.primer.bed -p /data/alignments/ERR6913101_trimmed_unsorted.bam"` | Unix |
 
 
 2. 
@@ -501,24 +503,24 @@ This is pulling in the set of primer schemes directly from the artic pipeline to
 
 | Command | Platform |
 | ------- | -------- |
-| `docker container run -w /data -v  $pwd/test-data:/data -it --rm --name artic staphb/ivar bash -c "samtools sort -o /data/alignments/minimap2/NB03_trimmed_unsorted.bam > /data/alignments/minimap2/NB03_trimmed_sorted.bam"` | Windows Powershell |
-| `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "samtools sort -o /data/alignments/ERR6913101_trimmed_unsorted.bam > /data/alignments/ERR6913101_trimmed_sorted.bam"` | Unix |
+| `docker container run -w /data -v  $pwd/test-data:/data --rm --name artic staphb/ivar bash -c "samtools sort -o /data/alignments/minimap2/NB03_trimmed_unsorted.bam > /data/alignments/minimap2/NB03_trimmed_sorted.bam"` | Windows Powershell |
+| `docker container run -w /data -v $PWD/test-data:/data --rm --name artic staphb/ivar bash -c "samtools sort -o /data/alignments/ERR6913101_trimmed_unsorted.bam > /data/alignments/ERR6913101_trimmed_sorted.bam"` | Unix |
 
 3. 
 
 
 | Command | Platform |
 | ------- | -------- |
-| `docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic staphb/ivar bash -c "mkdir /data/variants/; samtools mpileup -A -aa -d 0 -Q 0 --reference /data/reference/nCoV-2019.reference.fasta  /data/alignments/ERR6913101_trimmed_sorted.bam > /data/variants/ERR6913101_pileup.txt"` | Windows Powershell |
-| `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "mkdir /data/variants/; samtools mpileup -A -aa -d 0 -Q 0 --reference /data/reference/nCoV-2019.reference.fasta  /data/alignments/ERR6913101_trimmed_sorted.bam > /data/variants/ERR6913101_pileup.txt"` | Unix |
+| `docker container run -w /data -v $pwd/test-data:/data --rm --name artic staphb/ivar bash -c "mkdir /data/variants/; samtools mpileup -A -aa -d 0 -Q 0 --reference /data/reference/nCoV-2019.reference.fasta  /data/alignments/ERR6913101_trimmed_sorted.bam > /data/variants/ERR6913101_pileup.txt"` | Windows Powershell |
+| `docker container run -w /data -v $PWD/test-data:/data --rm --name artic staphb/ivar bash -c "mkdir /data/variants/; samtools mpileup -A -aa -d 0 -Q 0 --reference /data/reference/nCoV-2019.reference.fasta  /data/alignments/ERR6913101_trimmed_sorted.bam > /data/variants/ERR6913101_pileup.txt"` | Unix |
 
 
 4. 
 
 | Command | Platform |
 | ------- | -------- |
-| ```docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic staphb/ivar bash -c "cat /data/variants/NB03_pileup.txt \|  ivar consensus  -p /data/consensus/consensus.fa  -m 10 -t 0.5 -n N" ``` | Windows Powershell |
-| `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "cat /data/variants/NB03_pileup.txt \|  ivar consensus  -p /data/consensus/consensus.fa  -m 10 -t 0.5 -n N" ` | Unix |
+| ```docker container run -w /data -v $pwd/test-data:/data --rm --name artic staphb/ivar bash -c "cat /data/variants/NB03_pileup.txt \|  ivar consensus  -p /data/consensus/consensus.fa  -m 10 -t 0.5 -n N" ``` | Windows Powershell |
+| `docker container run -w /data -v $PWD/test-data:/data --rm --name artic staphb/ivar bash -c "cat /data/variants/NB03_pileup.txt \|  ivar consensus  -p /data/consensus/consensus.fa  -m 10 -t 0.5 -n N" ` | Unix |
 
 ## Creating your Own Medaka Consensus Runs using 3rd party Docker Images
 
@@ -529,8 +531,8 @@ Let's run a consensus run, like we did in the consensus pipeline without pre-ins
 
 | Command | Platform |
 | ------- | -------- |
-| `docker container run -it -v $pwd/test-data:/data -w /data staphb/medaka bash -c "medaka_consensus -i /data/demux-fastq_pass/NB03.fastq -d /data/reference/nCoV-2019.reference.fasta -o /data/output/medaka_consensus -m r941_min_high_g303 -f"` | Windows Powershell |
-| `docker container run -it -v $PWD/test-data:/data -w /data staphb/medaka bash -c "medaka_consensus -i /data/demux-fastq_pass/NB03.fastq -d /data/reference/nCoV-2019.reference.fasta -o /data/output/medaka_consensus -m r941_min_high_g303 -f"` | Unix |
+| `docker container run -v $pwd/test-data:/data -w /data staphb/medaka bash -c "medaka_consensus -i /data/demux-fastq_pass/NB03.fastq -d /data/reference/nCoV-2019.reference.fasta -o /data/output/medaka_consensus -m r941_min_high_g303 -f"` | Windows Powershell |
+| `docker container run -v $PWD/test-data:/data -w /data staphb/medaka bash -c "medaka_consensus -i /data/demux-fastq_pass/NB03.fastq -d /data/reference/nCoV-2019.reference.fasta -o /data/output/medaka_consensus -m r941_min_high_g303 -f"` | Unix |
 
 Notice something interesting....
 
