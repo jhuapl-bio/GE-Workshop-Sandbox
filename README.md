@@ -211,6 +211,8 @@ bcftools mpileup \
             -o alignments/ERR6913101_alignment.vcf
 ```
 
+Again, lets do the same for our long read example fastq file
+
 ```
 bcftools mpileup \
     -f reference/nCoV-2019.reference.fasta \
@@ -341,38 +343,64 @@ ktImportTaxonomy -i /data/classifications/sample_metagenome.kraken.report -o /da
 
 Now take a look at the resulting `classifications/sample_metagenome.kraken.html` file by double-clicking it to open in your browser automatically
 
-#### k. Creating a consensus genome from Nanopore Reads using Medaka
+#### k. Preparing to create a consensus 
+
+*You need to use a different Docker image than sandbox for this. If you're in a Docker container already you need to type: `exit`*
+
+#### k.1. Creating a consensus genome from Nanopore Reads using Medaka
 
 
-:warning: You need to use a different Docker image than sandbox for this. If you're in a Docker container already you need to type: `exit`
+:warning: This step is optional for your own data! All MinKNOW runs can be demultiplexed automatically after basecalling through the MinKNOW UI options
+
 
 You may have already noticed that we have a demultiplexed set of files in the `/data/demux-fastq_pass` folder. However, this is not likely to happen when you have a traditional run from MinKNOW. Usually it will spit out a set of fastq files rather than just one single one per sample. To gather them all up, we can run one of the subcommands called `artic gather`. This will push all fastq files into a single one like what we see in `/data/demux-fastq_pass`
 
 Let's first enter our new image by running. Remember that the name for the current directory is `$PWD` for Unix (Mac or Linux) and `$pwd` for Windows Powershell
 
+To Demultiplex a run, use `guppy barcoder` on the `fastq_pass` folder of interest
 
 ### Windows Powershell
 
 ```
-docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic jhuaplbio/artic bash
+docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic genomicpariscentre/guppy guppy_barcoder --require_barcodes_both_ends -i /data/20200514_2000_X3_FAN44250_e97e74b4/fastq_pass -s /data/20200514_2000_X3_FAN44250_e97e74b4/demux --recursive
 ```
 
 ### Unix
 
 ```
-docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic jhuaplbio/artic bash
+docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic genomicpariscentre/guppy guppy_barcoder --require_barcodes_both_ends -i /data/20200514_2000_X3_FAN44250_e97e74b4/fastq_pass -s /data/20200514_2000_X3_FAN44250_e97e74b4/demux --recursive
 ```
 
+#### k.2 Gathering multiple fastqs 
 
-To Demultiplex a run, use `guppy barcoder` on the `fastq_pass` folder of interest
+*You need to use a different Docker image than sandbox for this. If you're in a Docker container already you need to type: `exit`*
+
+Once you have a demultiplexed directory for your sample(s) you then need to gather them all into a single fastq file for the next step. 
+
+**You have 2 options**
+
+You only need to select one of the options (Option A or B) below
+
+#### Option A
+
+
+The easier method is to simply use the `artic` command from `staphb/artic-ncov2019` to gather up all fastq files in your directory (demultiplexed result) and gather all into one file. 
+
+
+#### Windows Powershell
 
 ```
-
-guppy_barcoder --require_barcodes_both_ends -i /data/20200514_2000_X3_FAN44250_e97e74b4/fastq_pass -s /data/20200514_2000_X3_FAN44250_e97e74b4/demux --recursive
-
+docker container run -w /data/20200514_2000_X3_FAN44250_e97e74b4/demux -v $pwd/test-data:/data -it --rm --name articgather staphb/artic-ncov2019 artic guppyplex --directory /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03 --output /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03.fastq
 ```
 
-If you ever need to take all of your files, that have been demultiplexed into individual barcode directories you can do
+#### Unix
+
+```
+docker container run -w /data/20200514_2000_X3_FAN44250_e97e74b4/demux -v $PWD/test-data:/data -it --rm --name articgather staphb/artic-ncov2019 artic guppyplex --directory /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03 --output /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03.fastq
+```
+
+IF you look at the `demux-fastq_pass` folder, you should see that the `NB03.fastq` is the same length as the `demultiplexed/NB03.fastq` file you made just now. 
+
 
 ```
 
@@ -384,7 +412,7 @@ done > /data/20200514_2000_X3_FAN44250_e97e74b4/demux/barcode03.fastq
 
 You now have created a merged barcode from all the fastqs that are attributed to it! Congrats!
 
-## L. Consensus Generation
+## l. Consensus Generation with medaka and artic
 
 Let's start easy and run artic. This is not in your sandbox Docker Image so first, we need to `exit`
 
@@ -423,7 +451,7 @@ docker container run -w /data/consensus -v $pwd/test-data:/data -it --rm --name 
 docker container run -w /data/consensus -v $PWD/test-data:/data -it --rm --name artic staphb/artic-ncov2019 bash -c "export LC_ALL=C.UTF-8; export LANG=C.UTF-8; multiqc . "
 
 ```
-<!-- 
+
 Your output files will be in `test-data/consensus/artic`, primarily you want the `<barcode_name>.consensus.fasta` and `multiqc_report.html` if you made it
 
 
@@ -443,9 +471,9 @@ medaka_consensus \
     -o /data/consensus/medaka \
     -m r941_min_high_g360
 
-``` -->
+```
 
-<!-- 
+ 
 ## Creating your Own Ivar Consensus Runs using 3rd party Docker Images
 
 But, what if we wanted to run our own images one by one NOT in an interactive environment. 
@@ -491,8 +519,6 @@ This is pulling in the set of primer schemes directly from the artic pipeline to
 | ------- | -------- |
 | ```docker container run -w /data -v $pwd/test-data:/data -it --rm --name artic staphb/ivar bash -c "cat /data/variants/NB03_pileup.txt \|  ivar consensus  -p /data/consensus/consensus.fa  -m 10 -t 0.5 -n N" ``` | Windows Powershell |
 | `docker container run -w /data -v $PWD/test-data:/data -it --rm --name artic staphb/ivar bash -c "cat /data/variants/NB03_pileup.txt \|  ivar consensus  -p /data/consensus/consensus.fa  -m 10 -t 0.5 -n N" ` | Unix |
- -->
-
 
 ## Creating your Own Medaka Consensus Runs using 3rd party Docker Images
 
