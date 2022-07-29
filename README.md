@@ -418,6 +418,8 @@ You now have created a merged barcode from all the fastqs that are attributed to
 
 Let's start easy and run artic. This is not in your sandbox Docker Image so first, we need to `exit`
 
+:warning: Be sure you specify your primer set here from the artic protocol. The test-data includes them, pulled from https://github.com/artic-network/primer-schemes so it can all be run automatically. For your own data, you need to mount them in the select path or copy them to your test data folder. The `primer-schemes` folder is seen below as `/data/primer-schemes`
+
 We first need to run 
 
 
