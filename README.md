@@ -291,7 +291,7 @@ kraken2 --db /data/databases/flukraken2 /data/metagenome/flu_ont/BC01.fastq --re
 Try this out in pavian. First exit from the docker container with `exit`, then run 
 
 ```
-docker container run -it --rm -p 8004:80  florianbw/pavian
+docker container run  -d --rm -p 8004:80  florianbw/pavian
 
 ```
 
@@ -488,16 +488,27 @@ If we're working with a select few organisms utilizing a primer scheme for Ilumi
 First, we need to get the primer schemes for SARS-CoV-2 (our organism of interest for this example). These primers will be used for the artic minion process. Luckily, we have this present in your test-data/primer-schemes
 
 
-This is pulling in the set of primer schemes directly from the artic pipeline toolkit's set of primer schemes for EBOLA, SARS-CoV-2, and Nipah
+This is pulling in the set of primer schemes directly from the artic pipeline toolkit's set of primer schemes for EBOLA, SARS-CoV-2, and Nipah. The primer-schemes are automatically in `/data` as `primer-schemes`. See [here](#l-consensus-generation-with-medaka-and-artic) for a bit more on how we've set this up.
 
 
+Since we've already indexed our SARS-CoV-2 reference genome in earlier steps with `bowtie2-build` we will skip that step. While we have many commands at our disposal in the `jhuaplbio/sandbox` environment, let's practice with using images for one specific command and nothing more, recreating what we just did with the Illumina data but this time more trustworthy.
+
+For reference, these are reads obtained from the (Viral Amplicon Sequencing)[https://sandbox.bio/tutorials?id=viral-amplicon] tutorial.
+
+
+0. 
+
+| Command | Platform |
+| ------- | -------- |
+| `docker container run -w /data -v $pwd/test-data:/data  --rm --name artic staphb/bowtie2 bash -c "bowtie2 -x /data/reference/nCoV-2019 -1 viruses/sars_cov_2/reads_1.fq -2 viruses/sars_cov_2/reads_2.fq  | samtools view -S -b | samtools sort -o alignments/reads_alignments.sorted.bam "` | Windows Powershell |
+| `docker container run -w /data -v $PWD/test-data:/data  --rm --name artic staphb/bowtie2 bash -c "bowtie2 -x /data/reference/nCoV-2019 -1 viruses/sars_cov_2/reads_1.fq -2 viruses/sars_cov_2/reads_2.fq  | samtools view -S -b | samtools sort -o alignments/reads_alignments.sorted.bam "` | Unix |
 
 1. 
 
 | Command | Platform |
 | ------- | -------- |
-| `docker container run -w /data -v $pwd/test-data:/data --rm --name artic staphb/ivar bash -c "ivar trim -i /data/alignments/minimap2/NB03_sorted.bam -b /data/primer-schemes/nCoV-2019/V3/nCoV-2019.primer.bed -p /data/alignments/minimap2/NB03_trimmed_unsorted.bam"` | Windows Powershell |
-| `docker container run -w /data -v $PWD/test-data:/data  --rm --name artic staphb/ivar bash -c "ivar trim -i /data/alignments/ERR6913101_alignments_sorted.bam -b /data/primer-schemes/nCoV-2019/V3/nCoV-2019.primer.bed -p /data/alignments/ERR6913101_trimmed_unsorted.bam"` | Unix |
+| `docker container run -w /data -v $pwd/test-data:/data  --rm --name artic staphb/ivar bash -c "ivar trim -i /data/alignments/reads_alignments.sorted.bam -b /data/primer-schemes/nCoV-2019/V3/nCoV-2019.primer.bed -p /data/alignments/reads_alignments.unsorted.trimmed.bam"` | Windows Powershell |
+| `docker container run -w /data -v $PWD/test-data:/data  --rm --name artic staphb/ivar bash -c "ivar trim -i /data/alignments/reads_alignments.sorted.bam -b /data/primer-schemes/nCoV-2019/V2/nCoV-2019.primer.bed -p /data/alignments/reads_alignments.unsorted.trimmed.bam"` | Unix |
 
 
 2. 
@@ -505,24 +516,24 @@ This is pulling in the set of primer schemes directly from the artic pipeline to
 
 | Command | Platform |
 | ------- | -------- |
-| `docker container run -w /data -v  $pwd/test-data:/data --rm --name artic staphb/ivar bash -c "samtools sort -o /data/alignments/minimap2/NB03_trimmed_unsorted.bam > /data/alignments/minimap2/NB03_trimmed_sorted.bam"` | Windows Powershell |
-| `docker container run -w /data -v $PWD/test-data:/data --rm --name artic staphb/ivar bash -c "samtools sort -o /data/alignments/ERR6913101_trimmed_unsorted.bam > /data/alignments/ERR6913101_trimmed_sorted.bam"` | Unix |
+| `docker container run -w /data -v  $pwd/test-data:/data --rm --name artic staphb/ivar bash -c "samtools sort  /data/alignments/reads_alignments.unsorted.bam > /data/alignments/reads_alignments.sorted.trimmed.bam"` | Windows Powershell |
+| `docker container run -w /data -v $PWD/test-data:/data --rm --name artic staphb/ivar bash -c "samtools sort  /data/alignments/reads_alignments.unsorted.trimmed.bam > /data/alignments/reads_alignments.sorted.trimmed.bam"` | Unix |
 
 3. 
 
 
 | Command | Platform |
 | ------- | -------- |
-| `docker container run -w /data -v $pwd/test-data:/data --rm --name artic staphb/ivar bash -c "mkdir /data/variants/; samtools mpileup -A -aa -d 0 -Q 0 --reference /data/reference/nCoV-2019.reference.fasta  /data/alignments/ERR6913101_trimmed_sorted.bam > /data/variants/ERR6913101_pileup.txt"` | Windows Powershell |
-| `docker container run -w /data -v $PWD/test-data:/data --rm --name artic staphb/ivar bash -c "mkdir /data/variants/; samtools mpileup -A -aa -d 0 -Q 0 --reference /data/reference/nCoV-2019.reference.fasta  /data/alignments/ERR6913101_trimmed_sorted.bam > /data/variants/ERR6913101_pileup.txt"` | Unix |
+| `docker container run -w /data -v $pwd/test-data:/data --rm --name artic staphb/ivar bash -c "mkdir /data/variants/; samtools mpileup -A -aa -d 0 -Q 0 --reference /data/reference/nCoV-2019.reference.fasta  /data/alignments/reads_alignments.sorted.trimmed.bam > /data/variants/reads.pileup.txt"` | Windows Powershell |
+| `docker container run -w /data -v $PWD/test-data:/data --rm --name artic staphb/ivar bash -c "mkdir /data/variants/; samtools mpileup -A -aa -d 0 -Q 0 --reference /data/reference/nCoV-2019.reference.fasta  /data/alignments/reads_alignments.sorted.trimmed.bam > /data/variants/reads.pileup.txt"` | Unix |
 
 
 4. 
 
 | Command | Platform |
 | ------- | -------- |
-| ```docker container run -w /data -v $pwd/test-data:/data --rm --name artic staphb/ivar bash -c "cat /data/variants/NB03_pileup.txt \|  ivar consensus  -p /data/consensus/consensus.fa  -m 10 -t 0.5 -n N" ``` | Windows Powershell |
-| `docker container run -w /data -v $PWD/test-data:/data --rm --name artic staphb/ivar bash -c "cat /data/variants/NB03_pileup.txt \|  ivar consensus  -p /data/consensus/consensus.fa  -m 10 -t 0.5 -n N" ` | Unix |
+| `docker container run -w /data -v $pwd/test-data:/data --rm --name artic staphb/ivar bash -c "cat /data/variants/reads.pileup.txt |  ivar consensus  -p /data/consensus/reads.consensus.fa  -m 10 -t 0.5 -n N" ` | Windows Powershell |
+| `docker container run -w /data -v $PWD/test-data:/data --rm --name artic staphb/ivar bash -c "cat /data/variants/reads.pileup.txt |  ivar consensus  -p /data/consensus/reads.consensus.fa  -m 10 -t 0.5 -n N" ` | Unix |
 
 ## Creating your Own Medaka Consensus Runs using 3rd party Docker Images
 
