@@ -4,6 +4,28 @@
 
 Prerequisites: None
 
+1. Open Windows Powershell and type `wsl --version`
+
+If you have something appear you can skip this step, otherwise follow the instructions [here](https://docs.microsoft.com/en-us/windows/wsl/install-win10#step-4---download-the-linux-kernel-update-package)
+
+2. `wsl --install -d ubuntu`
+
+You may need to restart your machine after installing
+
+
+## Git
+
+### `WSL2` and `Linux`
+
+`sudo apt-get update && sudo apt-get install -y git`
+
+### `Mac`
+
+`brew install git`
+
+* If you dont have brew, install it with: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+
 ## Nextflow 
 
 Prerequisites: 
@@ -13,6 +35,13 @@ Prerequisites:
 
 
 On Windows, you need to be sure you are running WSL2
+Follow the instructions [here](https://www.nextflow.io/docs/latest/getstarted.html) (after installing pre-reqs)
+
+```
+curl -s https://get.nextflow.io | bash
+chmod +x nextflow
+sudo cp nextflow /usr/local/bin
+```
 
 ## Docker
 
@@ -71,6 +100,22 @@ echo $(jq --arg user "$USER" '. += {"userns-remap": $user}' /etc/docker/daemon.j
 
 ### Images
 
+Prerequisites: Docker
+
+<!-- Show the imgs/LibraryBasestack.png file -->
+![Library](./imgs/LibraryBasestack2.png)
+
+Within Basestack, import (little blue button on the left side): 
+
+1. `Pavian`
+2. `Mytax Dashboard v2` 
+3. `KrakenKrona`
+4. `Kraken`
+5. `Bowtie2`
+6. `TaxTriage` 
+
+Be aware that, for Mac OSX Arm64 systems, there may be issues with the architecture in running these pipelines
+
 ## Basestack
 
 Prerequisites: Docker
@@ -82,6 +127,9 @@ Prerequisites: Docker
     c. Windows (admin): `*Setup.exe`
     d. Linux: `AppImage`. Make sure to select `x86_64` (most cases for your laptop)
         - You will need to run `chmod +x` on the AppImage to allow it to be double-clickable. Otherwise run with `./Basestack.x86_64.AppImage`
+
+![releases](./imgs/releases1.png)
+![releases2](./imgs/releases2.png)
 
 ## Conda 
 
@@ -99,7 +147,7 @@ bash Miniconda3-latest-Linux-x86_64.sh
 
 2. `Mac OSX`
 
-`ARM64`
+`arm64`
 
 ```
 cd $HOME
@@ -107,14 +155,12 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
 bash Miniconda3-latest-MacOSX-arm64.sh
 ```
 
-`AMD64`
+`amd64`
 
 ```
 cd $HOME
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
 bash Miniconda3-latest-MacOSX-x86_64.sh
 ```
-
-## Git
 
 
