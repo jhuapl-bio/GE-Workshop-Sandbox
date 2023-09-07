@@ -31,7 +31,10 @@ You may need to restart your machine after installing
 Prerequisites: 
 
 1. Java (OpenJDK)
-2. Unix Environment (WSL2 see above for Windows Users)
+
+Do a 11 version install with `sudo apt install openjdk-11-jdk` but be aware this might not be accessible for all OS types
+  
+3. Unix Environment (WSL2 see above for Windows Users)
 
 
 On Windows, you need to be sure you are running WSL2
