@@ -32,7 +32,7 @@ Prerequisites:
 
 1. Java (OpenJDK)
 
-To install on WSL2 and Linux, you can get version 11 like: 
+To install on WSL2 and Linux, you can get version 17 like: 
 
 `sudo apt install -y openjdk-17-jdk`
 
