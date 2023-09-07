@@ -47,6 +47,8 @@ OpenJDK Runtime Environment Homebrew (build 20.0.1)
 OpenJDK 64-Bit Server VM Homebrew (build 20.0.1, mixed mode, sharing)
 ```
 
+Please note that the version may vary based on what you've installed. In my case I've installed v20 but you may see v11 or later
+
 2. Unix Environment (WSL2 see above for Windows Users)
 
 
