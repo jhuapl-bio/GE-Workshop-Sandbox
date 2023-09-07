@@ -38,6 +38,15 @@ To install on WSL2 and Linux, you can get version 11 like:
 
 Please be aware that this will not install on all OS types. On Mac, you will need to install it from: `brew install java`
 
+If it is installed and you run `java --version` you should see: 
+
+```
+java --version
+openjdk 20.0.1 2023-04-18
+OpenJDK Runtime Environment Homebrew (build 20.0.1)
+OpenJDK 64-Bit Server VM Homebrew (build 20.0.1, mixed mode, sharing)
+```
+
 2. Unix Environment (WSL2 see above for Windows Users)
 
 
