@@ -215,7 +215,7 @@ Open up a terminal and run:
 nextflow run https://github.com/jhuapl-bio/taxtriage -r main -profile test,docker --outdir ~/test_nfcore
 ```
 
-:info: Please be aware that if you want to use `singularity` you can with `-profile test,singularity`
+:warning: Please be aware that if you want to use `singularity` you can with `-profile test,singularity`
 
 As your pipeline runs, you should begin to see the steps begin to "fill" with numeric values. These are the forked processes that are the result of all previous steps
 
