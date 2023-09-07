@@ -199,6 +199,7 @@ this will make a folder called `test_nfcore` in your `$HOME` directory. In there
 
 The folder would look like: 
 
+![releases](./imgs/outputtmp.png)
 
 And the Report file, `multiqc/multiqc_report.html` will make some output files that look like 
 
