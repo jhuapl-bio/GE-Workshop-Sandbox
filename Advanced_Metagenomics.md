@@ -40,7 +40,7 @@ Follow the instructions [here](https://www.nextflow.io/docs/latest/getstarted.ht
 ```
 curl -s https://get.nextflow.io | bash
 chmod +x nextflow
-sudo cp nextflow /usr/local/bin
+sudo cp nextflow /usr/local/bin/
 ```
 
 ## Docker
@@ -163,4 +163,24 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
 bash Miniconda3-latest-MacOSX-x86_64.sh
 ```
 
+### Kraken2 databases
+
+1. [standard-8](https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20230605.tar.gz)
+2. [viral](https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20230605.tar.gz)
+3. [flukraken2](https://media.githubusercontent.com/media/jhuapl-bio/mytax/master/databases/flukraken2.tar.gz)
+
+
+### TaxTriage Trial Run
+
+This process is going to be one of the primary workflows from QC to Assembly, with Kraken2 in the middle for classification of unknown taxa
+
+You will need to use `WSL2` on Windows and ensure you have Nextflow Installed with `Docker`
+
+Open up a terminal and run:
+
+```
+nextflow run https://github.com/jhuapl-bio/taxtriage -r main -profile test,docker --outdir ~/test_nfcore
+```
+
+this will make a folder called `test_nfcore` in your `$HOME` directory. In there you will see an example output of `taxtriage` that will also contain a small kraken2 database and report file(s), consensus files, a multiqc report
 
