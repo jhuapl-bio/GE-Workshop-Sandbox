@@ -34,7 +34,7 @@ Prerequisites:
 
 To install on WSL2 and Linux, you can get version 11 like: 
 
-`sudo apt install -y openjdk-11-jdk`
+`sudo apt install -y openjdk-17-jdk`
 
 Please be aware that this will not install on all OS types. On Mac, you will need to install it from: `brew install java`
 
