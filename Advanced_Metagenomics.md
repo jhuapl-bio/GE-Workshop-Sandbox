@@ -50,6 +50,28 @@ chmod +x nextflow
 sudo cp nextflow /usr/local/bin/
 ```
 
+If it successfully completes the `curl` command, you will see something like 
+
+
+```
+curl -s https://get.nextflow.io | bash
+CAPSULE: Downloading dependency io.nextflow:nf-httpfs:jar:23.04.3
+CAPSULE: Downloading dependency io.nextflow:nf-commons:jar:23.04.3
+CAPSULE: Downloading dependency io.nextflow:nextflow:jar:23.04.3
+                                    
+      N E X T F L O W
+      version 23.04.3 build 5875
+      created 11-08-2023 18:37 UTC (14:37 EDT)
+      cite doi:10.1038/nbt.3820
+      http://nextflow.io
+
+
+Nextflow installation completed. Please note:
+- the executable file `nextflow` has been created in the folder: /Users/$USER/Downloads
+- you may complete the installation by moving it to a directory in your $PATH
+
+```
+
 ## Docker
 
 Prerequisites: None (But you need Admin Permissions)
