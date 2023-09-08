@@ -12,6 +12,7 @@ If you have something appear you can skip this step, otherwise follow the instru
 
 You may need to restart your machine after installing
 
+:warning: please be aware that things in your `C:` drive will be referred to as `mnt/c/`. So, for instance if I want to put something in my `Documents` folder I would need to do `cp test.txt /mnt/c/Users/$USER/Documents/test.txt`. Make sure you select the right value of $USER in that path example. If you're unsure, simply check the username in Windows10 OR you can hit `tab` after `/mnt/c/Users/` and you should see things autopopulate`
 
 ## Git
 
