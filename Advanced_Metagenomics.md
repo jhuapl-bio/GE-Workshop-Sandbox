@@ -26,6 +26,58 @@ You may need to restart your machine after installing
 * If you dont have brew, install it with: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 
+## Docker
+
+Prerequisites: None (But you need Admin Permissions)
+
+[Mac OSX](https://docs.docker.com/desktop/install/mac-install/)
+
+Make sure to select the right processor type. Typically, newer Mac Models are the Apple Silicon option
+
+[Windows](https://docs.docker.com/desktop/install/windows-install/)
+
+You will need admin access to install this
+
+[Linux](https://docs.docker.com/engine/install/ubuntu/)
+
+Make sure to follow the steps in the `post-installation` steps
+
+Or you can follow these commands below. Simply copy and paste them into your terminal
+
+
+```
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+
+
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+
+sudo groupadd docker
+sudo usermod -aG docker $USER
+
+## only run these commands once (between the ##) as repeat lines can mess up your env. Use nano if you need to edit it and this was run already
+sudo sed -i "1s/^/$USER:$(id -u):1\n/" /etc/subuid
+sudo sed -i "1s/^/$USER:$(id -g):1\n/" /etc/subgid
+sudo apt install jq
+
+echo $(jq --arg user "$USER" '. += {"userns-remap": $user}' /etc/docker/daemon.json) > ~/daemon.json && sudo mv ~/daemon.json /etc/docker/daemon.json
+
+##
+
+```
+
 ## Nextflow 
 
 Prerequisites: 
@@ -83,57 +135,58 @@ Nextflow installation completed. Please note:
 
 ```
 
-## Docker
 
-Prerequisites: None (But you need Admin Permissions)
+### TaxTriage Trial Run
 
-[Mac OSX](https://docs.docker.com/desktop/install/mac-install/)
+This process is going to be one of the primary workflows from QC to Assembly, with Kraken2 in the middle for classification of unknown taxa. By running this upcoming command, you will be able to install all Docker images that correspond to the pipeline. Additionally, you will install a test database (called test_metagenome) along with a basic Samplesheet (which contains information on each of the samples for the pipeline to use) and some simulated Miseq (paired-end) and Oxford Nanopore reads. 
 
-Make sure to select the right processor type. Typically, newer Mac Models are the Apple Silicon option
+For more information on the datasets, see [here](https://github.com/jhuapl-bio/datasets/tree/main) and for information on taxtriage usage see [here](https://github.com/jhuapl-bio/taxtriage/blob/main/docs/usage.md)
 
-[Windows](https://docs.docker.com/desktop/install/windows-install/)
+You will need to use `WSL2` on Windows and ensure you have Nextflow Installed with `Docker`
 
-You will need admin access to install this
-
-[Linux](https://docs.docker.com/engine/install/ubuntu/)
-
-Make sure to follow the steps in the `post-installation` steps
-
-Or you can follow these commands below. Simply copy and paste them into your terminal
-
+Open up a terminal and run:
 
 ```
-# Add Docker's official GPG key:
-sudo apt-get update
-sudo apt-get install ca-certificates curl gnupg
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-
-# Add the repository to Apt sources:
-echo \
-  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
-  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-
-
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-
-sudo groupadd docker
-sudo usermod -aG docker $USER
-
-## only run these commands once (between the ##) as repeat lines can mess up your env. Use nano if you need to edit it and this was run already
-sudo sed -i "1s/^/$USER:$(id -u):1\n/" /etc/subuid
-sudo sed -i "1s/^/$USER:$(id -g):1\n/" /etc/subgid
-sudo apt install jq
-
-echo $(jq --arg user "$USER" '. += {"userns-remap": $user}' /etc/docker/daemon.json) > ~/daemon.json && sudo mv ~/daemon.json /etc/docker/daemon.json
-
-##
-
+nextflow run https://github.com/jhuapl-bio/taxtriage -r main -profile test,docker --outdir ~/test_nfcore
 ```
+
+:warning: Please be aware that if you want to use `singularity` you can with `-profile test,singularity`
+
+As your pipeline runs, you should begin to see the steps begin to "fill" with numeric values. These are the forked processes that are the result of all previous steps
+
+![releases](./imgs/taxtriage.png)
+
+
+
+this will make a folder called `test_nfcore` in your `$HOME` directory. In there you will see an example output of `taxtriage` that will also contain a small kraken2 database and report file(s), consensus files, a multiqc report
+
+The folder would look like: 
+
+![releases](./imgs/outputtmp.png)
+
+And the Report file, `multiqc/multiqc_report.html` will make some output files that look like 
+
+![releases](./imgs/taxtriage_report1.png)
+![releases2](./imgs/taxtriage_report2.png)
+
+
+
+
+
+WARNING:
+
+If you experience any "stalling" at certain areas, try to restart *Docker Desktop* after cancelling the job with `Ctrl` + `C`. You can also pass the `-resume` parameter like: `nextflow run https://github.com/jhuapl-bio/taxtriage -r main -profile test,docker --outdir ~/test_nfcore -resume` to pick up where you left off after cancelling. 
+
+
+### Kraken2 databases
+
+Now that we've run nextflow on a pre-made and tiny kraken2 database, we will download 3 more separately for use in the workshop. For these databases, we will be referencing them directly to show the differences in how the databases are able to report taxa
+
+Download these databases to your `Desktop` or wherever you are the most comfortable. Remember the location for the workshop days
+
+1. [standard-8](https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20230605.tar.gz)
+2. [viral](https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20230605.tar.gz)
+3. [flukraken2](https://media.githubusercontent.com/media/jhuapl-bio/mytax/master/databases/flukraken2.tar.gz)
 
 
 ### Base Install
@@ -205,51 +258,3 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
 bash Miniconda3-latest-MacOSX-x86_64.sh
 ```
 
-### Kraken2 databases
-
-Download these databases to your `Desktop` or wherever you are the most comfortable. Remember the location for the workshop days
-
-1. [standard-8](https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20230605.tar.gz)
-2. [viral](https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20230605.tar.gz)
-3. [flukraken2](https://media.githubusercontent.com/media/jhuapl-bio/mytax/master/databases/flukraken2.tar.gz)
-
-
-### TaxTriage Trial Run
-
-This process is going to be one of the primary workflows from QC to Assembly, with Kraken2 in the middle for classification of unknown taxa.
-
-You will need to use `WSL2` on Windows and ensure you have Nextflow Installed with `Docker`
-
-Open up a terminal and run:
-
-```
-nextflow run https://github.com/jhuapl-bio/taxtriage -r main -profile test,docker --outdir ~/test_nfcore
-```
-
-:warning: Please be aware that if you want to use `singularity` you can with `-profile test,singularity`
-
-As your pipeline runs, you should begin to see the steps begin to "fill" with numeric values. These are the forked processes that are the result of all previous steps
-
-![releases](./imgs/taxtriage.png)
-
-
-
-
-this will make a folder called `test_nfcore` in your `$HOME` directory. In there you will see an example output of `taxtriage` that will also contain a small kraken2 database and report file(s), consensus files, a multiqc report
-
-The folder would look like: 
-
-![releases](./imgs/outputtmp.png)
-
-And the Report file, `multiqc/multiqc_report.html` will make some output files that look like 
-
-![releases](./imgs/taxtriage_report1.png)
-![releases2](./imgs/taxtriage_report2.png)
-
-
-
-
-
-WARNING:
-
-If you experience any "stalling" at certain areas, try to restart *Docker Desktop* after cancelling the job with `Ctrl` + `C`. You can also pass the `-resume` parameter like: `nextflow run https://github.com/jhuapl-bio/taxtriage -r main -profile test,docker --outdir ~/test_nfcore -resume` to pick up where you left off after cancelling. 
