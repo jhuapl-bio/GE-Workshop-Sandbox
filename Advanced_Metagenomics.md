@@ -154,21 +154,21 @@ nextflow run https://github.com/jhuapl-bio/taxtriage -r main -profile test,docke
 
 As your pipeline runs, you should begin to see the steps begin to "fill" with numeric values. These are the forked processes that are the result of all previous steps
 
-![releases](./imgs/taxtriage.png)
 
+<img src="./imgs/taxtriage.png"  width="60%" height="30%">
 
 
 this will make a folder called `test_nfcore` in your `$HOME` directory. In there you will see an example output of `taxtriage` that will also contain a small kraken2 database and report file(s), consensus files, a multiqc report
 
 The folder would look like: 
 
-![releases](./imgs/outputtmp.png)
+<img src="./imgs/outputtmp.png"  width="60%" height="30%">
+
 
 And the Report file, `multiqc/multiqc_report.html` will make some output files that look like 
 
-![releases](./imgs/taxtriage_report1.png)
-![releases2](./imgs/taxtriage_report2.png)
-
+<img src="./imgs/taxtriage_report1.png"  width="60%" height="30%">
+<img src="./imgs/taxtriage_report2.png"  width="60%" height="30%">
 
 
 
@@ -203,8 +203,10 @@ Prerequisites: Docker
     d. Linux: `AppImage`. Make sure to select `x86_64` (most cases for your laptop)
         - You will need to run `chmod +x` on the AppImage to allow it to be double-clickable. Otherwise run with `./Basestack.x86_64.AppImage`
 
-![releases](./imgs/releases1.png)
-![releases2](./imgs/releases2.png)
+<img src="./imgs/releases1.png"  width="20%" height="10%">
+<img src="./imgs/releases2.png"  width="60%" height="30%">
+
+
 
 
 ### Images
@@ -212,7 +214,10 @@ Prerequisites: Docker
 Prerequisites: Docker
 
 <!-- Show the imgs/LibraryBasestack.png file -->
-![Library](./imgs/LibraryBasestack2.png)
+
+<img src="./imgs/LibraryBasestack2.png"  width="60%" height="20%">
+
+
 
 Within Basestack, import (little blue button on the left side): 
 
