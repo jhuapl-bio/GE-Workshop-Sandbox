@@ -188,8 +188,9 @@ Download these databases to your `Desktop` or wherever you are the most comforta
 2. [viral](https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20230605.tar.gz)
 3. [flukraken2](https://media.githubusercontent.com/media/jhuapl-bio/mytax/master/databases/flukraken2.tar.gz)
 
+### Test Data 
 
-### Base Install
+Download this zip folder [here](https://github.com/jhuapl-bio/datasets/archive/refs/heads/main.zip) - 109 MB
 
 ## Basestack
 
