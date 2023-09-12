@@ -191,7 +191,7 @@ Download these databases to your `Desktop` or wherever you are the most comforta
 
 ### Test Data 
 
-Download this zip folder [here](https://github.com/jhuapl-bio/datasets/archive/refs/heads/main.zip) - 109 MB
+Download this zip folder [here](https://github.com/jhuapl-bio/datasets/archive/refs/heads/main.zip) - 140 MB
 Also, if you dont have it from the previous workshop, get [this folder](https://drive.google.com/file/d/1zrgwheJxhMTvd7zu0fuRhVYYM0aGY5XS/view?usp=sharing) as well - ~500 MB
 
 ❗Be aware that the first is a GiHub repo which you can `git clone` as well with `git clone https://github.com/jhuapl-bio/datasets.git` and you can pull any changes down the line with `git clone`
