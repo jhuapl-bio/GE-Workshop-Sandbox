@@ -9,6 +9,7 @@ Prerequisites: None
 If you have something appear you can skip this step, otherwise follow the instructions [here](https://docs.microsoft.com/en-us/windows/wsl/install-win10#step-4---download-the-linux-kernel-update-package)
 
 2. `wsl --install -d ubuntu`
+3. Go Back to powershell and type: `wsl.exe --set-default-version 2`
 
 You may need to restart your machine after installing
 
