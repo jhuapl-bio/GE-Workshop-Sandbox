@@ -132,6 +132,7 @@ Follow the instructions [here](https://www.nextflow.io/docs/latest/getstarted.ht
 
 ```
 curl -s https://get.nextflow.io | bash
+chown $USER nextflow
 chmod +x nextflow
 sudo cp nextflow /usr/local/bin/
 ```
