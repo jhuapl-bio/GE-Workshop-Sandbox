@@ -34,7 +34,9 @@ You may need to restart your machine after installing
 
 Otherwise, if you want to view things through the File Explorer you can do so by following these steps:
 
-On the left-hand side, you should see the Linux logo in the quick search, near the bottom.
+### Viewing or adding to your WSL from Windows Explorer
+
+On the left-hand side, you should see the Linux logo in the quick search, near the bottom. Open Windows Explorer (Folder icon) on your Windows 10/11 machine first.
 
 <img src="./imgs/accessingLinuxFS1.PNG"  width="60%" height="30%">
 
