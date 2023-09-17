@@ -1,5 +1,20 @@
 # Advanced Metagenomics Installation
 
+There are 3 mandatory steps with a fourth if you are using a Windows 10/11 machine
+
+1. [Docker](#docker)
+2. [Nextflow](#nextflow)
+3. [Basestack](#basestack)
+4. [(Only Windows) WSL2](#wsl2-windows-only)
+
+Please click the links to each of the above (or scroll down to them) to start the setup process
+
+Additionally, we have an optional step at the end to install conda. We will NOT be using conda for the workshop, but it is incredibly useful for downloading things in bioinformatics.
+
+5. [Conda](#Conda) 
+
+
+
 ## WSL2 (Windows Only)
 
 Prerequisites: None
