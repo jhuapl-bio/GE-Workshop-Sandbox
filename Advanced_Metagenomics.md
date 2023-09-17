@@ -133,11 +133,12 @@ Please be aware that this will not install on all OS types. On Mac, you will nee
 If it is installed and you run `java --version` you should see: 
 
 ```
-java --version
 openjdk 20.0.1 2023-04-18
 OpenJDK Runtime Environment Homebrew (build 20.0.1)
 OpenJDK 64-Bit Server VM Homebrew (build 20.0.1, mixed mode, sharing)
 ```
+
+❕Be aware that the above line is what you should see (the version may be different). It is NOT a command to run!
 
 Please note that the version may vary based on what you've installed. In my case I've installed v20 but you may see v11 or later
 
