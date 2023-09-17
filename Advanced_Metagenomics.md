@@ -11,6 +11,8 @@ Please click the links to each of the above (or scroll down to them) to start th
 
 Additionally, we have an optional step at the end to install conda. We will NOT be using conda for the workshop, but it is incredibly useful for downloading things in bioinformatics.
 
+Lastly, if there are formatted lines (grey background) for some code lines, there is a button on the righthand side you can click to copy EVERYTHING and then be able to paste it into your terminal.
+
 5. [Conda](#Conda) 
 
 
@@ -152,11 +154,12 @@ sudo cp nextflow /usr/local/bin/
 sudo chown $USER /usr/local/bin/nextflow
 ```
 
-If it successfully completes the `curl` command, you will see something like 
+If it successfully completes the `curl` command, you will see something like. 
+
+❕This is not a command, but what you should see after you run the above 4 lines of code
 
 
 ```
-curl -s https://get.nextflow.io | bash
 CAPSULE: Downloading dependency io.nextflow:nf-httpfs:jar:23.04.3
 CAPSULE: Downloading dependency io.nextflow:nf-commons:jar:23.04.3
 CAPSULE: Downloading dependency io.nextflow:nextflow:jar:23.04.3
