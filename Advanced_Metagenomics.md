@@ -282,7 +282,7 @@ You will likely see a window appear (if you haven't already installed everything
 
 <img src="./imgs/BasestackModPage1.png"  width="60%" height="20%">
 
-<img src="./imgs/BasestackModPage1.png"  width="60%" height="20%">
+<img src="./imgs/BasestackModPage2.png"  width="60%" height="20%">
 
 Simply select each of the blue download buttons to download everything, you should see the Orange box become green on the left-side when it is done
 
