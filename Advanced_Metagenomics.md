@@ -134,7 +134,7 @@ Follow the instructions [here](https://www.nextflow.io/docs/latest/getstarted.ht
 curl -s https://get.nextflow.io | bash
 chmod +x nextflow
 sudo cp nextflow /usr/local/bin/
-chown $USER /usr/local/bin/nextflow
+sudo chown $USER /usr/local/bin/nextflow
 ```
 
 If it successfully completes the `curl` command, you will see something like 
