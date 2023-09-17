@@ -273,7 +273,18 @@ Within Basestack, import (little blue button on the left side):
 3. `KrakenKrona`
 4. `Kraken`
 5. `Bowtie2`
-6. `TaxTriage` 
+6. `TaxTriage`
+
+
+Then, you should see the icons appear on the left side (if you don't automatically get redirected). 
+
+You will likely see a window appear (if you haven't already installed everything) that looks like:
+
+<img src="./imgs/BasestackModPage1.png"  width="60%" height="20%">
+
+<img src="./imgs/BasestackModPage1.png"  width="60%" height="20%">
+
+Simply select each of the blue download buttons to download everything, you should see the Orange box become green on the left-side when it is done
 
 Be aware that, for Mac OSX Arm64 systems, there may be issues with the architecture in running these pipelines
 
