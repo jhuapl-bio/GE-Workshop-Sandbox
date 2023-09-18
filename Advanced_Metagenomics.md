@@ -65,7 +65,11 @@ You're now in the `$HOME` of your WSL2 terminal! feel free to browse around. We 
 
 `brew install git`
 
-* If you dont have brew, install it with: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+* If you dont have brew, install it with:
+  
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
 
 
 ## Docker
