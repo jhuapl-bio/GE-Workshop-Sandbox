@@ -132,7 +132,9 @@ Prerequisites:
 
 To install on WSL2 and Linux, you can get version 17 like: 
 
-`sudo apt update -y && sudo apt install -y openjdk-17-jdk`
+```
+sudo apt update -y && sudo apt install -y openjdk-17-jdk
+```
 
 Please be aware that this will not install on all OS types. On Mac, you will need to install it from: `brew install java`
 
@@ -181,7 +183,22 @@ CAPSULE: Downloading dependency io.nextflow:nextflow:jar:23.04.3
 Nextflow installation completed. Please note:
 - the executable file `nextflow` has been created in the folder: /Users/$USER/Downloads
 - you may complete the installation by moving it to a directory in your $PATH
+```
 
+```
+nextflow run https://github.com/jhuapl-bio/taxtriage -r main -profile test,docker --outdir ~/test_nfcore -resume
+```
+
+A full install woud look like 
+
+
+```
+sudo apt update -y && sudo apt install -y openjdk-17-jdk
+curl -s https://get.nextflow.io | bash
+chmod +x nextflow
+sudo cp nextflow /usr/local/bin/
+sudo chown $USER /usr/local/bin/nextflow
+nextflow run https://github.com/jhuapl-bio/taxtriage -r main -profile test,docker --outdir ~/test_nfcore
 ```
 
 
@@ -196,7 +213,7 @@ You will need to use `WSL2` on Windows and ensure you have Nextflow Installed wi
 Open up a terminal and run:
 
 ```
-nextflow run https://github.com/jhuapl-bio/taxtriage -r main -profile test,docker --outdir ~/test_nfcore
+nextflow run https://github.com/jhuapl-bio/taxtriage -r main -profile test,docker --outdir ~/test_nfcore -resume
 ```
 
 :warning: Please be aware that if you want to use `singularity` you can with `-profile test,singularity`
