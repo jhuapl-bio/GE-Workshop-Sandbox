@@ -198,7 +198,7 @@ curl -s https://get.nextflow.io | bash
 chmod +x nextflow
 sudo cp nextflow /usr/local/bin/
 sudo chown $USER /usr/local/bin/nextflow
-nextflow run https://github.com/jhuapl-bio/taxtriage -r main -profile test,docker --outdir ~/test_nfcore
+nextflow run https://github.com/jhuapl-bio/taxtriage -r main -profile test,docker --outdir ~/test_nfcore -resume
 ```
 
 
