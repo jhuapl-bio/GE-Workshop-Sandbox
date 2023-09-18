@@ -189,7 +189,7 @@ Nextflow installation completed. Please note:
 nextflow run https://github.com/jhuapl-bio/taxtriage -r main -profile test,docker --outdir ~/test_nfcore -resume
 ```
 
-A full install woud look like 
+A full install would look like 
 
 
 ```
